@@ -10,8 +10,8 @@ import ru.yandex.practicum.filmorate.validator.Create;
 import ru.yandex.practicum.filmorate.validator.Update;
 
 import java.time.LocalDate;
+
 @Data
-@Builder
 public class User {
     @NotNull(groups = Update.class, message = "Необходимо указать id пользователя")
     private Long id;
