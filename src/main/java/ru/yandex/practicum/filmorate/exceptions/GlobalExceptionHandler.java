@@ -18,7 +18,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.CONFLICT)
     public Map<String, String> handleDuplicatedData(DuplicatedDataException e) {
         final Map<String, String> error = new HashMap<>();
-        error.put("error" , e.getMessage());
+        error.put("error", e.getMessage());
         return error;
     }
 
@@ -26,7 +26,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> notFoundDataException(NotFoundDataException e) {
         final Map<String, String> error = new HashMap<>();
-        error.put("error" , e.getMessage());
+        error.put("error", e.getMessage());
         return error;
     }
 
@@ -34,7 +34,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> validationException(ValidationException e) {
         final Map<String, String> error = new HashMap<>();
-        error.put("error" , e.getMessage());
+        error.put("error", e.getMessage());
         return error;
     }
 
