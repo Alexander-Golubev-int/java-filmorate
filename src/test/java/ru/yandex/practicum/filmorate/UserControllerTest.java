@@ -34,14 +34,7 @@ class UserControllerTest {
     @Test
     @Order(2)
     void createUserWithEmailNull() throws Exception {
-        String json = """
-                {
-                    "email": null,
-                    "login":"Billy",
-                    "name":"Herrington",
-                    "birthday": "1964-07-14"
-                }
-                """;
+        String json = "{\"email\":null,\"login\":\"Billy\",\"name\":\"Herrington\",\"birthday\":\"1964-07-14\"}";
         mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
@@ -53,14 +46,7 @@ class UserControllerTest {
     @Test
     @Order(3)
     void createUserWithEmailEmpty() throws Exception {
-        String json = """
-                {
-                    "email": " ",
-                    "login":"Billy",
-                    "name":"Herrington",
-                    "birthday": "1964-07-14"
-                }
-                """;
+        String json = "{\"email\":\" \",\"login\":\"Billy\",\"name\":\"Herrington\",\"birthday\":\"1964-07-14\"}";
         mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
@@ -72,14 +58,7 @@ class UserControllerTest {
     @Test
     @Order(4)
     void createUserWithEmailWithoutDog() throws Exception {
-        String json = """
-                {
-                    "email": "bobamail.ru",
-                    "login":"Billy",
-                    "name":"Herrington",
-                    "birthday": "1964-07-14"
-                }
-                """;
+        String json = "{\"email\":\"bobamail.ru\",\"login\":\"Billy\",\"name\":\"Herrington\",\"birthday\":\"1964-07-14\"}";
         mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
@@ -91,14 +70,7 @@ class UserControllerTest {
     @Test
     @Order(5)
     void createUserWithCorrectEmail() throws Exception {
-        String json = """
-                {
-                    "email": "bobmarli@mail.ru",
-                    "login":"Billy",
-                    "name":"Herrington",
-                    "birthday": "1964-07-14"
-                }
-                """;
+        String json = "{\"email\":\"bobmarli@mail.ru\",\"login\":\"Billy\",\"name\":\"Herrington\",\"birthday\":\"1964-07-14\"}";
         mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
@@ -113,14 +85,7 @@ class UserControllerTest {
     @Test
     @Order(6)
     void createUserWithLoginNull() throws Exception {
-        String json = """
-                {
-                    "email": "bobmarli@mail.ru",
-                    "login": null,
-                    "name":"Herrington",
-                    "birthday": "1964-07-14"
-                }
-                """;
+        String json = "{\"email\":\"bobmarli@mail.ru\",\"login\":null,\"name\":\"Herrington\",\"birthday\":\"1964-07-14\"}";
         mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
@@ -132,14 +97,7 @@ class UserControllerTest {
     @Test
     @Order(7)
     void createUserWithLoginEmpty() throws Exception {
-        String json = """
-                {
-                    "email": "bobmarli@mail.ru",
-                    "login": " ",
-                    "name":"Herrington",
-                    "birthday": "1964-07-14"
-                }
-                """;
+        String json = "{\"email\":\"bobmarli@mail.ru\",\"login\":\" \",\"name\":\"Herrington\",\"birthday\":\"1964-07-14\"}";
         mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
@@ -151,14 +109,7 @@ class UserControllerTest {
     @Test
     @Order(8)
     void createUserWithLoginHaveSpace() throws Exception {
-        String json = """
-                {
-                    "email": "bobmarli@mail.ru",
-                    "login": "Bob Bip ",
-                    "name":"Herrington",
-                    "birthday": "1964-07-14"
-                }
-                """;
+        String json = "{\"email\":\"bobmarli@mail.ru\",\"login\":\"Bob Bip \",\"name\":\"Herrington\",\"birthday\":\"1964-07-14\"}";
         mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
@@ -170,14 +121,7 @@ class UserControllerTest {
     @Test
     @Order(9)
     void createUserWithCorrectLogin() throws Exception {
-        String json = """
-                {
-                    "email": "bobamarli@mail.ru",
-                    "login": "BobBippp",
-                    "name":"Herringtonn",
-                    "birthday": "1964-07-14"
-                }
-                """;
+        String json = "{\"email\":\"bobamarli@mail.ru\",\"login\":\"BobBippp\",\"name\":\"Herringtonn\",\"birthday\":\"1964-07-14\"}";
         mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
@@ -192,14 +136,7 @@ class UserControllerTest {
     @Test
     @Order(10)
     void createUserWithBirthdayNull() throws Exception {
-        String json = """
-                {
-                    "email": "bobmarli@mail.ru",
-                    "login": "BobBip",
-                    "name":"Herrington",
-                    "birthday": null
-                }
-                """;
+        String json = "{\"email\":\"bobmarli@mail.ru\",\"login\":\"BobBip\",\"name\":\"Herrington\",\"birthday\":null}";
         mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
@@ -211,14 +148,7 @@ class UserControllerTest {
     @Test
     @Order(11)
     void createUserWithBirthdayWithSimpleText() throws Exception {
-        String json = """
-                {
-                    "email": "bobmarli@mail.ru",
-                    "login": "BobBip",
-                    "name":"Herrington",
-                    "birthday": "koko"
-                }
-                """;
+        String json = "{\"email\":\"bobmarli@mail.ru\",\"login\":\"BobBip\",\"name\":\"Herrington\",\"birthday\":\"koko\"}";
         mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
@@ -230,14 +160,7 @@ class UserControllerTest {
     @Test
     @Order(12)
     void createUserWithFutureBirthday() throws Exception {
-        String json = """
-                {
-                    "email": "bobmarli@mail.ru",
-                    "login": "BobBip",
-                    "name":"Herrington",
-                    "birthday": "2027-07-19"
-                }
-                """;
+        String json = "{\"email\":\"bobmarli@mail.ru\",\"login\":\"BobBip\",\"name\":\"Herrington\",\"birthday\":\"2027-07-19\"}";
         mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
@@ -249,14 +172,7 @@ class UserControllerTest {
     @Test
     @Order(13)
     void createUserWithCorrectBirthday() throws Exception {
-        String json = """
-                {
-                    "email": "piterParker@mail.ru",
-                    "login": "BobBip",
-                    "name":"Herrington",
-                    "birthday": "2025-07-19"
-                }
-                """;
+        String json = "{\"email\":\"piterParker@mail.ru\",\"login\":\"BobBip\",\"name\":\"Herrington\",\"birthday\":\"2025-07-19\"}";
         mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
@@ -271,13 +187,7 @@ class UserControllerTest {
     @Test
     @Order(14)
     void createUserWithoutName() throws Exception {
-        String json = """
-                {
-                    "email": "norm@mail.ru",
-                    "login": "BobBip",
-                    "birthday": "2025-07-19"
-                }
-                """;
+        String json = "{\"email\":\"norm@mail.ru\",\"login\":\"BobBip\",\"birthday\":\"2025-07-19\"}";
         mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
@@ -292,15 +202,7 @@ class UserControllerTest {
     @Test
     @Order(15)
     void updateUserWithoutChangingData() throws Exception {
-        String json = """
-                {
-                    "id": 2,
-                    "email": "bobamarli@mail.ru",
-                    "login": "BobBippp",
-                    "name": "Herringtonn",
-                    "birthday": "1964-07-14"
-                }
-                """;
+        String json = "{\"id\":2,\"email\":\"bobamarli@mail.ru\",\"login\":\"BobBippp\",\"name\":\"Herringtonn\",\"birthday\":\"1964-07-14\"}";
         mockMvc.perform(put("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
@@ -312,15 +214,7 @@ class UserControllerTest {
     @Test
     @Order(16)
     void updateUserWithNonExistId() throws Exception {
-        String json = """
-                {
-                    "id": 404,
-                    "email": "bobmarli@mail.ru",
-                    "login": "BobBip",
-                    "name": "BobBip",
-                    "birthday": "2025-07-19"
-                }
-                """;
+        String json = "{\"id\":404,\"email\":\"bobmarli@mail.ru\",\"login\":\"BobBip\",\"name\":\"BobBip\",\"birthday\":\"2025-07-19\"}";
         mockMvc.perform(put("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
@@ -332,14 +226,7 @@ class UserControllerTest {
     @Test
     @Order(17)
     void updateUserWithout() throws Exception {
-        String json = """
-                {
-                    "email": "bobmarli@mail.ru",
-                    "login": "BobBip",
-                    "name": "BobBip",
-                    "birthday": "2025-07-19"
-                }
-                """;
+        String json = "{\"email\":\"bobmarli@mail.ru\",\"login\":\"BobBip\",\"name\":\"BobBip\",\"birthday\":\"2025-07-19\"}";
         mockMvc.perform(put("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
