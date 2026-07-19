@@ -7,7 +7,6 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -17,24 +16,26 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @AutoConfigureMockMvc
-class UserControllerTest {
+class UserControllerTest
+{
     @Autowired
     private MockMvc mockMvc;
 
     @Test
     @Order(1)
-    void getEmptyListUsers() throws Exception {
+    void getEmptyListUsers() throws Exception
+    {
         mockMvc.perform(get("/users"))
                 .andExpect(status().isOk());
     }
 
     @Test
     @Order(2)
-    void createUserWithEmailNull() throws Exception {
+    void createUserWithEmailNull() throws Exception
+    {
         String json = """
                  { \s
                      "email": null,
@@ -53,7 +54,8 @@ class UserControllerTest {
 
     @Test
     @Order(3)
-    void createUserWithEmailEmpty() throws Exception {
+    void createUserWithEmailEmpty() throws Exception
+    {
         String json = """
                  { \s
                      "email": " ",
@@ -72,7 +74,8 @@ class UserControllerTest {
 
     @Test
     @Order(4)
-    void createUserWithEmailWithoutDog() throws Exception {
+    void createUserWithEmailWithoutDog() throws Exception
+    {
         String json = """
                  { \s
                      "email": "bobamail.ru",
@@ -89,10 +92,10 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.description").value("Неправильно указан email"));
     }
 
-
     @Test
     @Order(5)
-    void createUserWithCorrectEmail() throws Exception {
+    void createUserWithCorrectEmail() throws Exception
+    {
         String json = """
                  { \s
                      "email": "bobmarli@mail.ru",
@@ -114,7 +117,8 @@ class UserControllerTest {
 
     @Test
     @Order(6)
-    void createUserWithLoginNull() throws Exception {
+    void createUserWithLoginNull() throws Exception
+    {
         String json = """
                  { \s
                      "email": "bobmarli@mail.ru",
@@ -133,7 +137,8 @@ class UserControllerTest {
 
     @Test
     @Order(7)
-    void createUserWithLoginEmpty() throws Exception {
+    void createUserWithLoginEmpty() throws Exception
+    {
         String json = """
                  { \s
                      "email": "bobmarli@mail.ru",
@@ -152,7 +157,8 @@ class UserControllerTest {
 
     @Test
     @Order(8)
-    void createUserWithLoginHaveSpace() throws Exception {
+    void createUserWithLoginHaveSpace() throws Exception
+    {
         String json = """
                  { \s
                      "email": "bobmarli@mail.ru",
@@ -171,7 +177,8 @@ class UserControllerTest {
 
     @Test
     @Order(9)
-    void createUserWithCorrectLogin() throws Exception {
+    void createUserWithCorrectLogin() throws Exception
+    {
         String json = """
                  { \s
                      "email": "bobamarli@mail.ru",
@@ -193,7 +200,8 @@ class UserControllerTest {
 
     @Test
     @Order(10)
-    void createUserWithBirthdayNull() throws Exception {
+    void createUserWithBirthdayNull() throws Exception
+    {
         String json = """
                  { \s
                      "email": "bobmarli@mail.ru",
@@ -212,7 +220,8 @@ class UserControllerTest {
 
     @Test
     @Order(11)
-    void createUserWithBirthdayWithSimpleText() throws Exception {
+    void createUserWithBirthdayWithSimpleText() throws Exception
+    {
         String json = """
                  { \s
                      "email": "bobmarli@mail.ru",
@@ -231,7 +240,8 @@ class UserControllerTest {
 
     @Test
     @Order(12)
-    void createUserWithFutureBirthday() throws Exception {
+    void createUserWithFutureBirthday() throws Exception
+    {
         String json = """
                  { \s
                      "email": "bobmarli@mail.ru",
@@ -250,7 +260,8 @@ class UserControllerTest {
 
     @Test
     @Order(13)
-    void createUserWithCorrectBirthday() throws Exception {
+    void createUserWithCorrectBirthday() throws Exception
+    {
         String json = """
                  { \s
                      "email": "piterParker@mail.ru",
@@ -272,7 +283,8 @@ class UserControllerTest {
 
     @Test
     @Order(14)
-    void createUserWithoutName() throws Exception {
+    void createUserWithoutName() throws Exception
+    {
         String json = """
                  { \s
                      "email": "norm@mail.ru",
@@ -293,7 +305,8 @@ class UserControllerTest {
 
     @Test
     @Order(15)
-    void updateUserWithoutChangingData() throws Exception {
+    void updateUserWithoutChangingData() throws Exception
+    {
         String json = """
                  {  \s
                      "id": 2,
@@ -311,10 +324,10 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.description").value("Данные не изменяются"));
     }
 
-
     @Test
     @Order(16)
-    void updateUserWithNonExistId() throws Exception {
+    void updateUserWithNonExistId() throws Exception
+    {
         String json = """
                  {  \s
                      "id": 404,
@@ -334,7 +347,8 @@ class UserControllerTest {
 
     @Test
     @Order(17)
-    void updateUserWithout() throws Exception {
+    void updateUserWithout() throws Exception
+    {
         String json = """
                  {  \s
                      "email": "bobmarli@mail.ru",
@@ -350,29 +364,4 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.type").value("id"))
                 .andExpect(jsonPath("$.description").value("Необходимо указать id пользователя"));
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
-
-

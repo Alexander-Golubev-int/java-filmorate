@@ -7,7 +7,6 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -17,24 +16,26 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @AutoConfigureMockMvc
-class FilmControllerTest {
+class FilmControllerTest
+{
     @Autowired
     private MockMvc mockMvc;
 
     @Test
     @Order(1)
-    void getEmptyListFilms() throws Exception {
+    void getEmptyListFilms() throws Exception
+    {
         mockMvc.perform(get("/films"))
                 .andExpect(status().isOk());
     }
 
     @Test
     @Order(2)
-    void createFilmWithNameNull() throws Exception {
+    void createFilmWithNameNull() throws Exception
+    {
         String json = """
                 {
                 	"name": null,
@@ -53,7 +54,8 @@ class FilmControllerTest {
 
     @Test
     @Order(3)
-    void createFilmWithNameEmpty() throws Exception {
+    void createFilmWithNameEmpty() throws Exception
+    {
         String json = """
                 {
                 	"name": "",
@@ -72,7 +74,8 @@ class FilmControllerTest {
 
     @Test
     @Order(4)
-    void createFilmWithCorrectName() throws Exception {
+    void createFilmWithCorrectName() throws Exception
+    {
         String json = """
                 {
                 	"name": "Муся",
@@ -92,10 +95,10 @@ class FilmControllerTest {
                 .andExpect(jsonPath("$.duration").value("20"));
     }
 
-
     @Test
     @Order(5)
-    void createFilmDescriptionNull() throws Exception {
+    void createFilmDescriptionNull() throws Exception
+    {
         String json = """
                 {
                 	"name": "Муся",
@@ -114,7 +117,8 @@ class FilmControllerTest {
 
     @Test
     @Order(6)
-    void createFilmDescriptionEmpty() throws Exception {
+    void createFilmDescriptionEmpty() throws Exception
+    {
         String json = """
                 {
                 	"name": "Муся",
@@ -132,7 +136,8 @@ class FilmControllerTest {
 
     @Test
     @Order(7)
-    void createFilmDescriptionWithSize201() throws Exception {
+    void createFilmDescriptionWithSize201() throws Exception
+    {
         String json = """
                 {
                 	 "name": "Муся",
@@ -151,7 +156,8 @@ class FilmControllerTest {
 
     @Test
     @Order(8)
-    void createFilmDescriptionWithSize200() throws Exception {
+    void createFilmDescriptionWithSize200() throws Exception
+    {
         String json = """
                 {
                 	 "name": "Муся",
@@ -172,7 +178,8 @@ class FilmControllerTest {
 
     @Test
     @Order(9)
-    void createFilmReleaseDateNull() throws Exception {
+    void createFilmReleaseDateNull() throws Exception
+    {
         String json = """
                 {
                 	"name": "Муся",
@@ -191,7 +198,8 @@ class FilmControllerTest {
 
     @Test
     @Order(10)
-    void createFilmReleaseDateSimpleText() throws Exception {
+    void createFilmReleaseDateSimpleText() throws Exception
+    {
         String json = """
                 {
                 	"name": "Муся",
@@ -210,7 +218,8 @@ class FilmControllerTest {
 
     @Test
     @Order(11)
-    void createFilmReleaseDateUnder1895() throws Exception {
+    void createFilmReleaseDateUnder1895() throws Exception
+    {
         String json = """
                 {
                 	"name": "Муся",
@@ -229,7 +238,8 @@ class FilmControllerTest {
 
     @Test
     @Order(12)
-    void createFilmReleaseDateEqual1895() throws Exception {
+    void createFilmReleaseDateEqual1895() throws Exception
+    {
         String json = """
                 {
                 	"name": "Муся",
@@ -250,7 +260,8 @@ class FilmControllerTest {
 
     @Test
     @Order(13)
-    void createFilmReleaseDurationNull() throws Exception {
+    void createFilmReleaseDurationNull() throws Exception
+    {
         String json = """
                 {
                 	"name": "Муся",
@@ -269,7 +280,8 @@ class FilmControllerTest {
 
     @Test
     @Order(14)
-    void createFilmReleaseDurationSimpleText() throws Exception {
+    void createFilmReleaseDurationSimpleText() throws Exception
+    {
         String json = """
                 {
                 	"name": "Муся",
@@ -288,7 +300,8 @@ class FilmControllerTest {
 
     @Test
     @Order(15)
-    void createFilmReleaseDurationZero() throws Exception {
+    void createFilmReleaseDurationZero() throws Exception
+    {
         String json = """
                 {
                 	"name": "Муся",
@@ -307,7 +320,8 @@ class FilmControllerTest {
 
     @Test
     @Order(16)
-    void createFilmReleaseDuration1() throws Exception {
+    void createFilmReleaseDuration1() throws Exception
+    {
         String json = """
                 {
                 	"name": "Муся",
@@ -328,7 +342,8 @@ class FilmControllerTest {
 
     @Test
     @Order(17)
-    void updateFilmRelease() throws Exception {
+    void updateFilmRelease() throws Exception
+    {
         String json = """
                 {
                     "id": 4, \s
@@ -351,7 +366,8 @@ class FilmControllerTest {
 
     @Test
     @Order(18)
-    void updateFilmReleaseWithoutId() throws Exception {
+    void updateFilmReleaseWithoutId() throws Exception
+    {
         String json = """
                 {
                 	"name": "Муся наносит ответный удар",
@@ -370,7 +386,8 @@ class FilmControllerTest {
 
     @Test
     @Order(19)
-    void updateFilmReleaseWithoutNonExistentId() throws Exception {
+    void updateFilmReleaseWithoutNonExistentId() throws Exception
+    {
         String json = """
                 {  \s
                     "id": 999,
@@ -390,7 +407,8 @@ class FilmControllerTest {
 
     @Test
     @Order(20)
-    void updateFilmReleaseWhereIdIsSimpleText() throws Exception {
+    void updateFilmReleaseWhereIdIsSimpleText() throws Exception
+    {
         String json = """
                 {  \s
                 	"id": "Jav",
@@ -410,7 +428,8 @@ class FilmControllerTest {
 
     @Test
     @Order(21)
-    void updateFilmWithoutChanges() throws Exception {
+    void updateFilmWithoutChanges() throws Exception
+    {
         String json = """
                 {  \s
                 	"id": "4",
@@ -430,7 +449,8 @@ class FilmControllerTest {
 
     @Test
     @Order(22)
-    void getNotListFilms() throws Exception {
+    void getNotListFilms() throws Exception
+    {
         mockMvc.perform(get("/films"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].name").value("Муся"))
