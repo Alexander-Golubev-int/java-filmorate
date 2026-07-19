@@ -35,13 +35,12 @@ class FilmControllerTest {
     @Order(2)
     void createFilmWithNameNull() throws Exception {
         String json = """
-                {
-                    "name": null,
-                    "description": "Описание",
-                    "releaseDate": "2025-12-12",
-                    "duration": 20
-                }
-                """;
+            {
+            "name": null,
+            "description": "Описание",
+            "releaseDate": "2025-12-12",
+            "duration": 20
+            }""";
         mockMvc.perform(post("/films")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
