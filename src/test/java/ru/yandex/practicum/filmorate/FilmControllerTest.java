@@ -37,9 +37,9 @@ class FilmControllerTest {
         String json = """
                 {
                     "name": null,
-                    "description":"Описание",
-                    "releaseDate":"2025-12-12",
-                    "duration":20
+                    "description": "Описание",
+                    "releaseDate": "2025-12-12",
+                    "duration": 20
                 }
                 """;
         mockMvc.perform(post("/films")
@@ -56,9 +56,9 @@ class FilmControllerTest {
         String json = """
                 {
                     "name": "",
-                    "description":"Описание",
-                    "releaseDate":"2025-12-12",
-                    "duration":20
+                    "description": "Описание",
+                    "releaseDate": "2025-12-12",
+                    "duration": 20
                 }
                 """;
         mockMvc.perform(post("/films")
@@ -75,9 +75,9 @@ class FilmControllerTest {
         String json = """
                 {
                     "name": "Муся",
-                    "description":"Описание",
-                    "releaseDate":"2025-12-12",
-                    "duration":20
+                    "description": "Описание",
+                    "releaseDate": "2025-12-12",
+                    "duration": 20
                 }
                 """;
         mockMvc.perform(post("/films")
@@ -98,8 +98,8 @@ class FilmControllerTest {
                 {
                     "name": "Муся",
                     "description": null,
-                    "releaseDate":"2025-12-12",
-                    "duration":20
+                    "releaseDate": "2025-12-12",
+                    "duration": 20
                 }
                 """;
         mockMvc.perform(post("/films")
@@ -116,8 +116,8 @@ class FilmControllerTest {
         String json = """
                 {
                     "name": "Муся",
-                    "releaseDate":"2025-12-12",
-                    "duration":20
+                    "releaseDate": "2025-12-12",
+                    "duration": 20
                 }
                 """;
         mockMvc.perform(post("/films")
@@ -133,10 +133,10 @@ class FilmControllerTest {
     void createFilmDescriptionWithSize201() throws Exception {
         String json = """
                 {
-                     "name": "Муся",
-                     "description": "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec qua",
-                     "releaseDate":"2025-12-12",
-                     "duration":20
+                    "name": "Муся",
+                    "description": "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec qua",
+                    "releaseDate": "2025-12-12",
+                    "duration": 20
                 }
                 """;
         mockMvc.perform(post("/films")
@@ -152,10 +152,10 @@ class FilmControllerTest {
     void createFilmDescriptionWithSize200() throws Exception {
         String json = """
                 {
-                     "name": "Муся",
-                     "description": "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec qu",
-                     "releaseDate":"2025-12-12",
-                     "duration":20
+                    "name": "Муся",
+                    "description": "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec qu",
+                    "releaseDate": "2025-12-12",
+                    "duration": 20
                 }
                 """;
         mockMvc.perform(post("/films")
@@ -176,7 +176,7 @@ class FilmControllerTest {
                     "name": "Муся",
                     "description": "Java",
                     "releaseDate": null,
-                    "duration":20
+                    "duration": 20
                 }
                 """;
         mockMvc.perform(post("/films")
@@ -195,7 +195,7 @@ class FilmControllerTest {
                     "name": "Муся",
                     "description": "Java",
                     "releaseDate": "Work again?",
-                    "duration":20
+                    "duration": 20
                 }
                 """;
         mockMvc.perform(post("/films")
@@ -214,7 +214,7 @@ class FilmControllerTest {
                     "name": "Муся",
                     "description": "Java",
                     "releaseDate": "1894-12-28",
-                    "duration":20
+                    "duration": 20
                 }
                 """;
         mockMvc.perform(post("/films")
@@ -233,7 +233,7 @@ class FilmControllerTest {
                     "name": "Муся",
                     "description": "Java",
                     "releaseDate": "1895-12-28",
-                    "duration":20
+                    "duration": 20
                 }
                 """;
         mockMvc.perform(post("/films")
@@ -329,7 +329,7 @@ class FilmControllerTest {
     void updateFilmRelease() throws Exception {
         String json = """
                 {
-                    "id": 4, 
+                    "id": 4,
                     "name": "Муся наносит ответный удар",
                     "description": "Java",
                     "releaseDate": "1895-12-28",
@@ -370,7 +370,7 @@ class FilmControllerTest {
     @Order(19)
     void updateFilmReleaseWithoutNonExistentId() throws Exception {
         String json = """
-                {  
+                {
                     "id": 999,
                     "name": "Муся наносит ответный удар",
                     "description": "Java",
@@ -390,7 +390,7 @@ class FilmControllerTest {
     @Order(20)
     void updateFilmReleaseWhereIdIsSimpleText() throws Exception {
         String json = """
-                {  
+                {
                     "id": "Jav",
                     "name": "Муся наносит ответный удар",
                     "description": "Java",
@@ -410,7 +410,7 @@ class FilmControllerTest {
     @Order(21)
     void updateFilmWithoutChanges() throws Exception {
         String json = """
-                {  
+                {
                     "id": "4",
                     "name": "Муся наносит ответный удар",
                     "description": "Java",
