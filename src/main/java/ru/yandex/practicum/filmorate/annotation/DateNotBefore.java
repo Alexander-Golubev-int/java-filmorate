@@ -25,9 +25,3 @@ public @interface DateNotBefore {
     Class<? extends Payload>[] payload() default {};
 
 }
-
-@Target(ElementType.FIELD)
-@Retention(RetentionPolicy.RUNTIME)
-@interface DateNotBeforeList {
-    DateNotBefore[] value();
-}
