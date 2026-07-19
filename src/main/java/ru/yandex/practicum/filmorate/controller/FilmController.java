@@ -15,8 +15,6 @@ import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.validator.Create;
 import ru.yandex.practicum.filmorate.validator.Update;
-
-import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,11 +38,6 @@ public class FilmController {
             throw new DuplicatedDataException("Такой фильм уже существует");
         }
 
-        if (dateValidator(film.getReleaseDate())) {
-            log.error("Попытка добавить фильм раньше минимальной даты созданного первого фильма");
-            throw new ValidationException("Дата релиза — не может быть раньше 28 декабря 1895 года");
-        }
-
         film.setId(getNextId());
         films.put(film.getId(), film);
         log.info("Фильм {} успешно создан и добавлен в список", film);
@@ -55,7 +48,7 @@ public class FilmController {
     public Film updateFilm(@Validated(Update.class) @RequestBody Film film) {
         if (film == null) {
             log.warn("Отправлен не проинициализированный фильм");
-            throw new NotFoundDataException("Необходимо отправить корректный json формат фильма");
+            throw new ValidationException("Необходимо отправить корректный json формат фильма");
         }
 
         if (!films.containsKey(film.getId())) {
@@ -68,10 +61,6 @@ public class FilmController {
             throw new DuplicatedDataException("Такой фильм уже есть");
         }
 
-        if (dateValidator(film.getReleaseDate())) {
-            log.warn("Попытка добавить фильм раньше минимальной даты созданного первого фильма");
-            throw new ValidationException("Дата релиза — не может быть раньше 28 декабря 1895 года");
-        }
         Film newFilm = films.get(film.getId());
         if (film.getName() != null) {
             log.info("Фильм {} с названием {} изменен на {}",newFilm, newFilm.getName(), film.getName());
@@ -96,16 +85,6 @@ public class FilmController {
         }
         films.replace(newFilm.getId(), newFilm);
         return newFilm;
-    }
-
-
-    private boolean dateValidator(LocalDate localDate) {
-        try {
-            return localDate.isBefore(LocalDate.of(1895, 12, 28));
-        } catch (Exception e) {
-            log.error("Передан неправильный формат даты для фильма");
-            throw new ValidationException("Передана неправильная строчка даты. Должен быть формат: yyyy-mm-dd");
-        }
     }
 
     private long getNextId() {

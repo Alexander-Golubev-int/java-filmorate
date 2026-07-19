@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.exceptions.DuplicatedDataException;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundDataException;
+import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.validator.Create;
 import ru.yandex.practicum.filmorate.validator.Update;
@@ -50,17 +51,17 @@ public class UserController {
     public User updateUser(@Validated(Update.class) @RequestBody User user) {
         if (user == null) {
             log.warn("Отправлен не проинициализированный пользователь");
-            throw new NotFoundDataException("Необходимо отправить корректный json формат пользователя");
+            throw new ValidationException("Необходимо отправить корректный json формат пользователя");
         }
 
         if (!users.containsKey(user.getId())) {
-            log.warn("Пользователь с ID = {} уже существует", user.getId());
+            log.warn("Пользователь с ID = {} не существует", user.getId());
             throw new NotFoundDataException("ID с таким пользователем не существует");
         }
 
         if (users.containsValue(user)) {
             log.warn("Попытка изменить пользователя, но без измененных полей {}", user);
-            throw new DuplicatedDataException("Такой пользователь уже есть");
+            throw new DuplicatedDataException("Данные не изменяются");
         }
 
         User newUser = users.get(user.getId());
