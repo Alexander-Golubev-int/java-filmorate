@@ -31,6 +31,7 @@ public class Film {
     public void addLikes() {
         likes++;
     }
+
     public void reduceAmountOfLikes() {
         if (likes == 0) {
             return;
