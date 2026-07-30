@@ -49,7 +49,6 @@ public class ExceptionHandler {
     @org.springframework.web.bind.annotation.ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
-        ErrorResponse errorResponse = new ErrorResponse("Некорректный JSON или неверный формат данных");
-        return errorResponse;
+        return new ErrorResponse("Некорректный JSON или неверный формат данных");
     }
 }
