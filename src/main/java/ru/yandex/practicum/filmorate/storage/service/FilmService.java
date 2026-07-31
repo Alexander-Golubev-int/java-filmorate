@@ -20,6 +20,19 @@ public class FilmService {
     private final InMemoryUserStorage inMemoryUserStorage;
     private final InMemoryFilmStorage inMemoryFilmStorage;
 
+
+    public Collection<Film> getFilms() {
+        return inMemoryFilmStorage.getFilms();
+    }
+
+    public Film createFilm(Film film) {
+        return inMemoryFilmStorage.createFilm(film);
+    }
+
+    public Film updateFilm(Film film) {
+        return inMemoryFilmStorage.updateFilm(film);
+    }
+
     public Map<String, String> addLike(Long filmId, Long userId) {
         checkFilmAndUserOrThrow(filmId, userId);
         throwIfAlreadyLiked(filmId, userId);

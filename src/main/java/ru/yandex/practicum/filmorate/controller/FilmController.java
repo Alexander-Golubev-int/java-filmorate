@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.service.FilmService;
-import ru.yandex.practicum.filmorate.storage.service.InMemoryFilmStorage;
 import ru.yandex.practicum.filmorate.validator.Create;
 import ru.yandex.practicum.filmorate.validator.Update;
 
@@ -25,12 +24,11 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RequestMapping("/films")
 public class FilmController {
-    private final InMemoryFilmStorage inMemoryFilmStorage;
     private final FilmService filmService;
 
     @GetMapping
     public Collection<Film> getFilms() {
-        return inMemoryFilmStorage.getFilms();
+        return filmService.getFilms();
     }
 
     @GetMapping(value = "/popular")
@@ -40,12 +38,12 @@ public class FilmController {
 
     @PostMapping
     public Film createFilm(@Validated(Create.class) @RequestBody Film film) {
-        return inMemoryFilmStorage.createFilm(film);
+        return filmService.createFilm(film);
     }
 
     @PutMapping
     public Film updateFilm(@Validated(Update.class) @RequestBody Film film) {
-        return inMemoryFilmStorage.updateFilm(film);
+        return filmService.updateFilm(film);
     }
 
     @PutMapping(value = "/{id}/like/{userId}")
@@ -59,5 +57,4 @@ public class FilmController {
                                           @PathVariable @Positive(message = "UserId должен быть > 0") Long userId) {
         return filmService.deleteLike(id, userId);
     }
-
 }
