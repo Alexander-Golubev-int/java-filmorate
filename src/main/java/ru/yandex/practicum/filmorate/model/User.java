@@ -34,7 +34,7 @@ public class User {
     @PastOrPresent(groups = {Create.class, Update.class},
             message = "Дата дня рождения не может быть в будущем")
     private LocalDate birthday;
-    private Set<Long> friends = new HashSet<>();
+    private Map<Long, FriendshipStatus> friends = new HashMap<>();
     @ToString.Exclude
     private Map<Long, Film> favoriteFilms = new HashMap<>();
 

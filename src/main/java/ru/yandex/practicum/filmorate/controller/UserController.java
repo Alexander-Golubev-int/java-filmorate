@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -56,6 +57,12 @@ public class UserController {
     public Map<String, String> updateUser(@PathVariable @Positive(message = "ID должен быть > 0") Long id,
                                           @PathVariable @Positive(message = "ID друга должен быть > 0") Long friendId) {
         return userService.addFriend(id, friendId);
+    }
+
+    @PatchMapping(path = "/{id}/friends/{friendId}")
+    public Map<String, String> confirmFriendship(@PathVariable @Positive(message = "ID должен быть > 0") Long id,
+                                          @PathVariable @Positive(message = "ID друга должен быть > 0") Long friendId) {
+        return userService.confirmFriendship(id, friendId);
     }
 
     @DeleteMapping(path = "/{id}/friends/{friendId}")

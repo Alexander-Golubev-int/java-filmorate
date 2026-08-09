@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import ru.yandex.practicum.filmorate.exceptions.FriendshipAlreadyExistsException;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundDataException;
+import ru.yandex.practicum.filmorate.model.FriendshipStatus;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.validator.Create;
@@ -45,15 +46,30 @@ public class UserService {
         checkUserOrThrow(id, friendId);
 
         User user = inMemoryUserStorage.getUsersMap().get(id);
-        if (user.getFriends().contains(friendId)) {
+        if (user.getFriends().containsKey(friendId)) {
             log.warn("Попытка добавить в друзья пользователя, который уже находится в списке друзей");
             throw new FriendshipAlreadyExistsException(id, friendId);
         }
 
-        user.getFriends().add(friendId);
+        user.getFriends().put(friendId, FriendshipStatus.PENDING);
         user = inMemoryUserStorage.getUsersMap().get(friendId);
-        user.getFriends().add(id);
+        user.getFriends().put(id, FriendshipStatus.PENDING);
         return Map.of("message", "Друг добавлен");
+    }
+
+    public Map<String, String> confirmFriendship(Long id, Long friendId) {
+        checkUserOrThrow(id, friendId);
+
+        User user = inMemoryUserStorage.getUsersMap().get(id);
+        if (!user.getFriends().containsKey(friendId)) {
+            log.warn("Попытка подтвердить дружбу когда пользователи еще не друзья");
+            throw new NotFoundDataException("Попытка подтвердить дружбу когда пользователи еще не друзья");
+        }
+
+        user.getFriends().put(friendId, FriendshipStatus.ACCEPTED);
+        user = inMemoryUserStorage.getUsersMap().get(friendId);
+        user.getFriends().put(id, FriendshipStatus.ACCEPTED);
+        return Map.of("message", "Дружба подтверждена!😎");
     }
 
     public Map<String, String> deleteFriend(Long id, Long friendId) {
@@ -69,7 +85,7 @@ public class UserService {
     public Collection<User> getFriendsUser(Long id) {
         checkUserOrThrow(id);
         User user = inMemoryUserStorage.getUsersMap().get(id);
-        return user.getFriends().stream()
+        return user.getFriends().keySet().stream()
                 .map(friendId -> inMemoryUserStorage.getUsersMap().get(friendId))
                 .toList();
     }
@@ -80,8 +96,8 @@ public class UserService {
         User user = inMemoryUserStorage.getUsersMap().get(id);
         User otherUser = inMemoryUserStorage.getUsersMap().get(otherId);
 
-        return user.getFriends().stream()
-                .filter(friend -> otherUser.getFriends().contains(friend))
+        return user.getFriends().keySet().stream()
+                .filter(friend -> otherUser.getFriends().containsKey(friend))
                 .map(friend -> inMemoryUserStorage.getUsersMap().get(friend))
                 .toList();
     }
