@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import ru.yandex.practicum.filmorate.annotation.DateNotBefore;
 import ru.yandex.practicum.filmorate.exceptions.DuplicatedDataException;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundDataException;
@@ -16,6 +17,7 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
+@Slf4j
 @Data
 public class Film {
     @NotNull(groups = Update.class, message = "Необходимо указать id фильма")
@@ -32,10 +34,11 @@ public class Film {
     @Min(groups = {Create.class}, value = 1, message = "Продолжительность должна быть положительным числом")
     private Integer duration;
     private Integer likes = 0;
-    private Set<Genre> genreSet = new HashSet<>();
-    private Set<AgeRating> ageRatings = new HashSet<>();
+    private Set<Genre> genres = new HashSet<>();
+    private MAP ageRating;
 
     public void addLikes() {
+        log.info("Лайк добавлен");
         likes++;
     }
 
@@ -43,66 +46,64 @@ public class Film {
         if (likes == 0) {
             return;
         }
+        log.info("Лайк успешно удален");
         likes--;
     }
 
     public void deleteGenre(String genre) {
         if (genre == null || genre.isBlank()) {
+            log.info("Отправлен пустой запрос по изменению жанра.");
             throw new ValidationException("Отправлен пустой запрос. Пожалуйста, укажите жанр.");
         }
         try {
             Genre tempGenre = Genre.valueOf(genre.toUpperCase());
-            if (!genreSet.remove(tempGenre)) {
+            if (!genres.remove(tempGenre)) {
+                log.info("Жанра: {} в фильме нет", genre);
                 throw new NotFoundDataException("Такого жанра в указанном фильме не существует.");
             }
         } catch (IllegalArgumentException e) {
+            log.info("Такой жанр: {} не существует.", genre);
             throw new NotFoundDataException("Жанр " + genre + "' не существует.");
         }
     }
 
     public void addNewGenre(String genre) {
         if (genre == null || genre.isBlank()) {
+            log.info("Отправлен пустой запрос по изменению жанра.");
             throw new ValidationException("Отправлен пустой запрос. Пожалуйста, укажите жанр.");
         }
         try {
             Genre tempGenre = Genre.valueOf(genre.toUpperCase());
-            if (genreSet.contains(tempGenre)) {
+            if (genres.contains(tempGenre)) {
+                log.info("Такой жанр({})уже есть для указанного фильма.", genre);
                 throw new DuplicatedDataException("Такой жанр уже есть для указанного фильма.");
             } else {
-                genreSet.add(tempGenre);
+                log.info("Жанр: {} успешно добавлен к фильму", tempGenre);
+                genres.add(tempGenre);
             }
         } catch (IllegalArgumentException e) {
+            log.info("Жанр {} не существует.", genre);
             throw new NotFoundDataException("Жанр " + genre + " не существует.");
-        }
-    }
-
-    public void deleteAgeRating(String rating) {
-        if (rating == null || rating.isBlank()) {
-            throw new ValidationException("Отправлен пустой запрос. Пожалуйста, укажите рейтинг.");
-        }
-        try {
-            AgeRating tempAgeRating = AgeRating.valueOf(rating.toUpperCase());
-            if (!ageRatings.remove(tempAgeRating)) {
-                throw new NotFoundDataException("Такого рейтинга нет в указанном фильме.");
-            }
-        } catch (IllegalArgumentException e) {
-            throw new NotFoundDataException("Рейтинг: " + rating + " не существует.");
         }
     }
 
     public void addNewRating(String rating) {
         if (rating == null || rating.isBlank()) {
+            log.info("Отправлен пустой запрос по изменению рейтинга.");
             throw new ValidationException("Отправлен пустой запрос. Пожалуйста, укажите рейтинг.");
         }
         try {
             AgeRating tempAgeRating = AgeRating.valueOf(rating.toUpperCase());
-            if (ageRatings.contains(tempAgeRating)) {
-                throw new DuplicatedDataException("Такой рейтинг уже есть для указанного фильма.");
-            } else {
-                ageRatings.add(tempAgeRating);
-            }
+            ageRating.setAgeRating(tempAgeRating);
+            log.info("Рейтинг успешно изменен.");
         } catch (IllegalArgumentException e) {
+            log.info("Рейтинг {} не существует.", rating);
             throw new NotFoundDataException("Рейтинг " + rating + " не существует.");
         }
     }
+}
+
+@Data
+class MAP {
+    private AgeRating ageRating;
 }
