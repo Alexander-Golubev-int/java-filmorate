@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import ru.yandex.practicum.filmorate.exceptions.FriendshipAlreadyExistsException;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundDataException;
+import ru.yandex.practicum.filmorate.model.Friendship;
 import ru.yandex.practicum.filmorate.model.FriendshipStatus;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
@@ -51,9 +52,7 @@ public class UserService {
             throw new FriendshipAlreadyExistsException(id, friendId);
         }
 
-        user.getFriends().put(friendId, FriendshipStatus.PENDING);
-        user = inMemoryUserStorage.getUsersMap().get(friendId);
-        user.getFriends().put(id, FriendshipStatus.PENDING);
+        user.getFriends().put(friendId, new Friendship(id, friendId, FriendshipStatus.PENDING));
         return Map.of("message", "Друг добавлен");
     }
 
@@ -61,20 +60,23 @@ public class UserService {
         checkUserOrThrow(id, friendId);
 
         User user = inMemoryUserStorage.getUsersMap().get(id);
-        if (!user.getFriends().containsKey(friendId)) {
+        User friend = inMemoryUserStorage.getUsersMap().get(friendId);
+
+        if (!friend.getFriends().containsKey(id)) {
             log.warn("Попытка подтвердить дружбу когда пользователи еще не друзья");
             throw new NotFoundDataException("Попытка подтвердить дружбу когда пользователи еще не друзья");
         }
-
-        user.getFriends().put(friendId, FriendshipStatus.ACCEPTED);
-        user = inMemoryUserStorage.getUsersMap().get(friendId);
-        user.getFriends().put(id, FriendshipStatus.ACCEPTED);
+        Friendship friendship = friend.getFriends().get(id);
+        friendship.setStatus(FriendshipStatus.ACCEPTED);
+        friend.getFriends().put(id, friendship);
+        user.getFriends().put(friendId, friendship);
+        log.info("Дружба между {} и {} успешно подтверждена.", id, friendId);
         return Map.of("message", "Дружба подтверждена!😎");
+
     }
 
     public Map<String, String> deleteFriend(Long id, Long friendId) {
         checkUserOrThrow(id, friendId);
-
         User user = inMemoryUserStorage.getUsersMap().get(id);
         user.getFriends().remove(friendId);
         user = inMemoryUserStorage.getUsersMap().get(friendId);

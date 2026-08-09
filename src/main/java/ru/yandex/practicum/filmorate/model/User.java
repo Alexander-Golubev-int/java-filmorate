@@ -11,9 +11,7 @@ import ru.yandex.practicum.filmorate.validator.Update;
 
 import java.time.LocalDate;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 @Data
 public class User {
@@ -34,7 +32,7 @@ public class User {
     @PastOrPresent(groups = {Create.class, Update.class},
             message = "Дата дня рождения не может быть в будущем")
     private LocalDate birthday;
-    private Map<Long, FriendshipStatus> friends = new HashMap<>();
+    private Map<Long, Friendship> friends = new HashMap<>();
     @ToString.Exclude
     private Map<Long, Film> favoriteFilms = new HashMap<>();
 
