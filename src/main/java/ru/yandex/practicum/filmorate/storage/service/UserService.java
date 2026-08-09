@@ -23,6 +23,18 @@ public class UserService {
     private final Logger log = LoggerFactory.getLogger(UserService.class);
     private final InMemoryUserStorage inMemoryUserStorage;
 
+    public Collection<User> getUsers() {
+        return inMemoryUserStorage.getUsers();
+    }
+
+    public User createUser(User user) {
+        return inMemoryUserStorage.createUser(user);
+    }
+
+    public User updateUser(User user) {
+        return inMemoryUserStorage.updateUser(user);
+    }
+
     public Map<String, String> addFriend(Long id, Long friendId) {
         checkUserOrThrow(id, friendId);
 
@@ -70,14 +82,14 @@ public class UserService {
     public Map<String, String> deleteFriend(Long id, Long friendId) {
         checkUserOrThrow(id, friendId);
         User user = inMemoryUserStorage.getUsersMap().get(id);
-        if (user.getRequestsFriendsSetList().getIncomingUsersSetList().contains(friendId)) {
+        if (user.getRequestsFriendsSetList().getIncomingUsersSetList().contains(friendId)){
             user.getRequestsFriendsSetList().getIncomingUsersSetList().remove(friendId);
             return Map.of("message", "Пользователь успешно удален");
         }
         user.getFriends().remove(friendId);
 
         user = inMemoryUserStorage.getUsersMap().get(friendId);
-        if (user.getRequestsFriendsSetList().getIncomingUsersSetList().contains(id)) {
+        if (user.getRequestsFriendsSetList().getIncomingUsersSetList().contains(id)){
             user.getRequestsFriendsSetList().getIncomingUsersSetList().remove(id);
             return Map.of("message", "Пользователь успешно удален");
         }
