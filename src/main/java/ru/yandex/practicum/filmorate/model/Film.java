@@ -4,7 +4,6 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.Builder;
 import lombok.Data;
 import ru.yandex.practicum.filmorate.annotation.DateNotBefore;
 import ru.yandex.practicum.filmorate.validator.Create;
@@ -13,7 +12,6 @@ import ru.yandex.practicum.filmorate.validator.Update;
 import java.time.LocalDate;
 
 @Data
-@Builder
 public class Film {
     @NotNull(groups = Update.class, message = "Необходимо указать id фильма")
     private Long id;
@@ -28,4 +26,16 @@ public class Film {
     @NotNull(groups = Create.class, message = "Продолжительность должна быть указана")
     @Min(groups = {Create.class}, value = 1, message = "Продолжительность должна быть положительным числом")
     private Integer duration;
+    private Integer likes = 0;
+
+    public void addLikes() {
+        likes++;
+    }
+
+    public void reduceAmountOfLikes() {
+        if (likes == 0) {
+            return;
+        }
+        likes--;
+    }
 }

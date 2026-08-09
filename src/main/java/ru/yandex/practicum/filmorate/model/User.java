@@ -5,10 +5,15 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
+import lombok.ToString;
 import ru.yandex.practicum.filmorate.validator.Create;
 import ru.yandex.practicum.filmorate.validator.Update;
 
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 @Data
 public class User {
@@ -29,4 +34,8 @@ public class User {
     @PastOrPresent(groups = {Create.class, Update.class},
             message = "Дата дня рождения не может быть в будущем")
     private LocalDate birthday;
+    private Set<Long> friends = new HashSet<>();
+    @ToString.Exclude
+    private Map<Long, Film> favoriteFilms = new HashMap<>();
+
 }
