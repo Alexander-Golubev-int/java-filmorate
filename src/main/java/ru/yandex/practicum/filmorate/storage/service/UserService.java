@@ -82,14 +82,14 @@ public class UserService {
     public Map<String, String> deleteFriend(Long id, Long friendId) {
         checkUserOrThrow(id, friendId);
         User user = inMemoryUserStorage.getUsersMap().get(id);
-        if (user.getRequestsFriendsSetList().getIncomingUsersSetList().contains(friendId)){
+        if (user.getRequestsFriendsSetList().getIncomingUsersSetList().contains(friendId)) {
             user.getRequestsFriendsSetList().getIncomingUsersSetList().remove(friendId);
             return Map.of("message", "Пользователь успешно удален");
         }
         user.getFriends().remove(friendId);
 
         user = inMemoryUserStorage.getUsersMap().get(friendId);
-        if (user.getRequestsFriendsSetList().getIncomingUsersSetList().contains(id)){
+        if (user.getRequestsFriendsSetList().getIncomingUsersSetList().contains(id)) {
             user.getRequestsFriendsSetList().getIncomingUsersSetList().remove(id);
             return Map.of("message", "Пользователь успешно удален");
         }
