@@ -35,7 +35,7 @@ public class Film {
     private Integer duration;
     private Integer likes = 0;
     private Set<Genre> genres = new HashSet<>();
-    private MAP ageRating;
+    private AgeRating ageRating;
 
     public void addLikes() {
         log.info("Лайк добавлен");
@@ -93,8 +93,7 @@ public class Film {
             throw new ValidationException("Отправлен пустой запрос. Пожалуйста, укажите рейтинг.");
         }
         try {
-            AgeRating tempAgeRating = AgeRating.valueOf(rating.toUpperCase());
-            ageRating.setAgeRating(tempAgeRating);
+            ageRating = AgeRating.valueOf(rating.toUpperCase());
             log.info("Рейтинг успешно изменен.");
         } catch (IllegalArgumentException e) {
             log.info("Рейтинг {} не существует.", rating);
@@ -103,7 +102,3 @@ public class Film {
     }
 }
 
-@Data
-class MAP {
-    private AgeRating ageRating;
-}

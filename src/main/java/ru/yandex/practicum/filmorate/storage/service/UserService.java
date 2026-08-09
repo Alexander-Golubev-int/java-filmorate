@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import ru.yandex.practicum.filmorate.exceptions.DuplicatedDataException;
 import ru.yandex.practicum.filmorate.exceptions.FriendshipAlreadyExistsException;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundDataException;
 import ru.yandex.practicum.filmorate.model.Friendship;
@@ -51,8 +52,10 @@ public class UserService {
             log.warn("Попытка добавить в друзья пользователя, который уже находится в списке друзей");
             throw new FriendshipAlreadyExistsException(id, friendId);
         }
-
         user.getFriends().put(friendId, new Friendship(id, friendId, FriendshipStatus.PENDING));
+        user = inMemoryUserStorage.getUsersMap().get(friendId);
+        user.getRequestsFriendsSetList().getIncomingUsersSetList().add(id);
+        log.info("Пользователь {} добавлен в список входящих заявок у пользователя {}", id, friendId);
         return Map.of("message", "Друг добавлен");
     }
 
@@ -60,17 +63,25 @@ public class UserService {
         checkUserOrThrow(id, friendId);
 
         User user = inMemoryUserStorage.getUsersMap().get(id);
-        User friend = inMemoryUserStorage.getUsersMap().get(friendId);
 
-        if (!friend.getFriends().containsKey(id)) {
+        if (user.getFriends().containsKey(friendId) && user.getFriends().get(friendId).getStatus() == FriendshipStatus.ACCEPTED) {
+            log.info("Пользователь {} уже находятся в дружбе с {}", id, friendId);
+            throw new DuplicatedDataException("Пользователь уже находятся в дружбе");
+        }
+
+        if (!user.getRequestsFriendsSetList().getIncomingUsersSetList().contains(friendId)) {
             log.warn("Попытка подтвердить дружбу когда пользователи еще не друзья");
             throw new NotFoundDataException("Попытка подтвердить дружбу когда пользователи еще не друзья");
         }
+
+        User friend = inMemoryUserStorage.getUsersMap().get(friendId);
         Friendship friendship = friend.getFriends().get(id);
         friendship.setStatus(FriendshipStatus.ACCEPTED);
         friend.getFriends().put(id, friendship);
         user.getFriends().put(friendId, friendship);
         log.info("Дружба между {} и {} успешно подтверждена.", id, friendId);
+        user.getRequestsFriendsSetList().getIncomingUsersSetList().remove(friendId);
+        log.info("Пользователь {} удален из списка входящих заявок на добавление", friendId);
         return Map.of("message", "Дружба подтверждена!😎");
 
     }

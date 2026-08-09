@@ -35,5 +35,5 @@ public class User {
     private Map<Long, Friendship> friends = new HashMap<>();
     @ToString.Exclude
     private Map<Long, Film> favoriteFilms = new HashMap<>();
-
+    private final IncomingRequestsFriends requestsFriendsSetList = new IncomingRequestsFriends();
 }
