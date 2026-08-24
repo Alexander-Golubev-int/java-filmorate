@@ -3,7 +3,8 @@
 > База данных приложения Filmorate предназначена для хранения информации о пользователях, фильмах, жанрах, возрастных рейтингах, лайках, избранных фильмах и дружеских связях между пользователями.
 
 **Интерактивная схема базы данных:**
-<img width="1757" height="956" alt="Untitled" src="https://github.com/user-attachments/assets/6bff229b-c8ae-48e8-ae5d-4b2d60a0d1fc" />
+<img width="1000" height="739" alt="Untitled (1)" src="https://github.com/user-attachments/assets/8a3d12cd-0d12-470d-a88d-1d81bf6ae52d" />
+
 
 [Открыть схему в dbdiagram.io](https://dbdiagram.io/d/6a791360829f06bdc8b47ca8)
 
@@ -53,10 +54,12 @@ WHERE fg.film_id = ?;
 ### Получение 10 самых популярных фильмов
 
 ```sql
-SELECT *
-FROM Films
+SELECT f.film_id, f.name, COUNT(ff.user_id) AS likes
+FROM Films f
+LEFT JOIN FavoriteFilms ff ON f.film_id = ff.film_id
+GROUP BY f.film_id, f.name
 ORDER BY likes DESC
-LIMIT 10;
+LIMIT 5;
 ```
 
 ### Получение информации о пользователе
@@ -68,6 +71,25 @@ WHERE user_id = ?;
 ```
 
 > `?` — идентификатор пользователя.
+
+### Получение информации о пользователе
+
+```sql
+SELECT u.user_id, u.name
+FROM User u
+JOIN Friendship f1
+    ON (f1.from_user_id = 1 AND f1.to_user_id = u.user_id)
+    OR (f1.to_user_id = 1 AND f1.from_user_id = u.user_id)
+JOIN FriendshipStatus fs1
+    ON f1.friendship_status_id = fs1.id
+JOIN Friendship f2
+    ON (f2.from_user_id = 2 AND f2.to_user_id = u.user_id)
+    OR (f2.to_user_id = 2 AND f2.from_user_id = u.user_id)
+JOIN FriendshipStatus fs2
+    ON f2.friendship_status_id = fs2.id
+WHERE fs1.status = 'ACCEPTED'
+  AND fs2.status = 'ACCEPTED';
+```
 
 ### Получение списка любимых фильмов пользователя
 
