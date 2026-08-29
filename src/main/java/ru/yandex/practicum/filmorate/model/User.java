@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.model;
 
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
@@ -16,7 +17,7 @@ import java.util.Map;
 @Data
 public class User {
     @NotNull(groups = Update.class, message = "Необходимо указать id пользователя")
-    private Long user_id;
+    private Long id;
     @Email(groups = {Create.class, Update.class}, regexp = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$",
             message = "Неправильно указан email")
     @NotNull(groups = Create.class, message = "Email не должен быть пустым")
