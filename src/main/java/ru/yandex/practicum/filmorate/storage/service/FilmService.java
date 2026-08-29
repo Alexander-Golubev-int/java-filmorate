@@ -41,7 +41,7 @@ public class FilmService {
         User user = inMemoryUserStorage.getUsersMap().get(userId);
         Film film = inMemoryFilmStorage.getFilmsMap().get(filmId);
         user.getFavoriteFilms().put(filmId, film);
-        film.addLikes();
+        //film.addLikes();
         return Map.of("message", "лайк успешно добавлен");
     }
 
@@ -51,16 +51,16 @@ public class FilmService {
         User user = inMemoryUserStorage.getUsersMap().get(userId);
         Film film = inMemoryFilmStorage.getFilmsMap().get(filmId);
         user.getFavoriteFilms().remove(filmId);
-        film.reduceAmountOfLikes();
+        //film.reduceAmountOfLikes();
         return Map.of("message", "лайк успешно удален");
     }
 
-    public Collection<Film> getMostFavoriteFilms(Long count) {
-        return inMemoryFilmStorage.getFilms().stream()
-                .sorted(Comparator.comparingInt(Film::getLikes).reversed())
-                .limit(count)
-                .toList();
-    }
+//    public Collection<Film> getMostFavoriteFilms(Long count) {
+//        return inMemoryFilmStorage.getFilms().stream()
+//                .sorted(Comparator.comparingInt(Film::getLikes).reversed())
+//                .limit(count)
+//                .toList();
+//    }
 
     private void throwIfAlreadyLiked(Long filmId, Long userId) {
         User user = inMemoryUserStorage.getUsersMap().get(userId);

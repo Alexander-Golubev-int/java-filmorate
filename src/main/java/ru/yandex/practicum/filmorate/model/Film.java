@@ -33,22 +33,8 @@ public class Film {
     @NotNull(groups = Create.class, message = "Продолжительность должна быть указана")
     @Min(groups = {Create.class}, value = 1, message = "Продолжительность должна быть положительным числом")
     private Integer duration;
-    private Integer likes = 0;
     private Set<Genre> genres = new HashSet<>();
     private AgeRating ageRating;
-
-    public void addLikes() {
-        log.info("Лайк добавлен");
-        likes++;
-    }
-
-    public void reduceAmountOfLikes() {
-        if (likes == 0) {
-            return;
-        }
-        log.info("Лайк успешно удален");
-        likes--;
-    }
 
     public void deleteGenre(String genre) {
         if (genre == null || genre.isBlank()) {

@@ -31,10 +31,10 @@ public class FilmController {
         return filmService.getFilms();
     }
 
-    @GetMapping(value = "/popular")
-    public Collection<Film> getPopularsFilms(@RequestParam(defaultValue = "10") Long count) {
-        return filmService.getMostFavoriteFilms(count);
-    }
+//    @GetMapping(value = "/popular")
+//    public Collection<Film> getPopularsFilms(@RequestParam(defaultValue = "10") Long count) {
+//        return filmService.getMostFavoriteFilms(count);
+//    }
 
     @PostMapping
     public Film createFilm(@Validated(Create.class) @RequestBody Film film) {

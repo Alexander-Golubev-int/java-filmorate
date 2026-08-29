@@ -19,6 +19,7 @@ import ru.yandex.practicum.filmorate.validator.Update;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,6 +31,11 @@ public class UserController {
     @GetMapping
     public Collection<User> getUsers() {
         return userService.getUsers();
+    }
+
+    @GetMapping(path = "/{id}")
+    public Optional<User> getUser(@PathVariable @Positive(message = "ID должен быть > 0") Long id) {
+        return userService.getUser(id);
     }
 
     @GetMapping(path = "/{id}/friends")

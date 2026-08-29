@@ -11,10 +11,12 @@ import ru.yandex.practicum.filmorate.model.Friendship;
 import ru.yandex.practicum.filmorate.model.FriendshipStatus;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.dal.UserRepository;
 
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -22,9 +24,14 @@ public class UserService {
 
     private final Logger log = LoggerFactory.getLogger(UserService.class);
     private final InMemoryUserStorage inMemoryUserStorage;
+    private final UserRepository userRepository;
 
     public Collection<User> getUsers() {
         return inMemoryUserStorage.getUsers();
+    }
+
+    public Optional<User> getUser(Long id) {
+        return userRepository.findById(id);
     }
 
     public User createUser(User user) {
