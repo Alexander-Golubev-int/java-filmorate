@@ -16,7 +16,7 @@ import java.util.Map;
 @Data
 public class User {
     @NotNull(groups = Update.class, message = "Необходимо указать id пользователя")
-    private Long id;
+    private Long user_id;
     @Email(groups = {Create.class, Update.class}, regexp = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$",
             message = "Неправильно указан email")
     @NotNull(groups = Create.class, message = "Email не должен быть пустым")
