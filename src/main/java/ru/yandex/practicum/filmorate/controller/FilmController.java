@@ -46,15 +46,15 @@ public class FilmController {
         return filmService.updateFilm(film);
     }
 
-    @PutMapping(value = "/{id}/like/{userId}")
-    public Map<String, String> addLike(@PathVariable @Positive(message = "ID должен быть > 0") Long id,
-                                       @PathVariable @Positive(message = "UserId должен быть > 0") Long userId) {
-        return filmService.addLike(id, userId);
-    }
-
-    @DeleteMapping(value = "/{id}/like/{userId}")
-    public Map<String, String> deleteLike(@PathVariable @Positive(message = "ID должен быть > 0") Long id,
-                                          @PathVariable @Positive(message = "UserId должен быть > 0") Long userId) {
-        return filmService.deleteLike(id, userId);
-    }
+//    @PutMapping(value = "/{id}/like/{userId}")
+//    public Map<String, String> addLike(@PathVariable @Positive(message = "ID должен быть > 0") Long id,
+//                                       @PathVariable @Positive(message = "UserId должен быть > 0") Long userId) {
+//        return filmService.addLike(id, userId);
+//    }
+//
+//    @DeleteMapping(value = "/{id}/like/{userId}")
+//    public Map<String, String> deleteLike(@PathVariable @Positive(message = "ID должен быть > 0") Long id,
+//                                          @PathVariable @Positive(message = "UserId должен быть > 0") Long userId) {
+//        return filmService.deleteLike(id, userId);
+//    }
 }

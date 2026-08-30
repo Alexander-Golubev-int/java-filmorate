@@ -18,7 +18,11 @@ VALUES ('brat2000@mail.ru',
        ('voronvova@mail.ru',
         'Voron',
         'Vova',
-        '1991-01-20');
+        '1991-01-20'),
+        ('keksFM@mail.ru',
+        'Keksik',
+        'Vova',
+        '1970-01-20');
 
 INSERT INTO "FriendshipStatus" (status)
 VALUES ('PENDING'),
@@ -27,7 +31,14 @@ VALUES ('PENDING'),
 
 INSERT INTO "Friendship" (from_user_id, to_user_id, friendship_status_id)
 VALUES (3, 4, 2),
-       (1, 2, 1);
+       (4, 3, 2),
+       (2, 4, 2),
+       (4, 2, 2),
+       (1, 2, 1),
+       (3, 6, 2),
+       (6, 3, 2),
+       (2, 6, 2),
+       (6, 2, 2);
 
 INSERT INTO "IncomingRequestToFriends" (user_id, from_user_id)
 VALUES (2, 1);

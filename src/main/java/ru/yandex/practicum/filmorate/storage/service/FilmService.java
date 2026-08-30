@@ -35,25 +35,25 @@ public class FilmService {
         return inMemoryFilmStorage.updateFilm(film);
     }
 
-    public Map<String, String> addLike(Long filmId, Long userId) {
-        checkFilmAndUserOrThrow(filmId, userId);
-        throwIfAlreadyLiked(filmId, userId);
-        User user = inMemoryUserStorage.getUsersMap().get(userId);
-        Film film = inMemoryFilmStorage.getFilmsMap().get(filmId);
-        user.getFavoriteFilms().put(filmId, film);
-        //film.addLikes();
-        return Map.of("message", "лайк успешно добавлен");
-    }
+//    public Map<String, String> addLike(Long filmId, Long userId) {
+//        checkFilmAndUserOrThrow(filmId, userId);
+//        throwIfAlreadyLiked(filmId, userId);
+//        User user = inMemoryUserStorage.getUsersMap().get(userId);
+//        Film film = inMemoryFilmStorage.getFilmsMap().get(filmId);
+//        //user.getFavoriteFilms().put(filmId, film);
+//        //film.addLikes();
+//        return Map.of("message", "лайк успешно добавлен");
+//    }
 
-    public Map<String, String> deleteLike(Long filmId, Long userId) {
-        checkFilmAndUserOrThrow(filmId, userId);
-        throwIfLikeDoesNotExist(filmId, userId);
-        User user = inMemoryUserStorage.getUsersMap().get(userId);
-        Film film = inMemoryFilmStorage.getFilmsMap().get(filmId);
-        user.getFavoriteFilms().remove(filmId);
-        //film.reduceAmountOfLikes();
-        return Map.of("message", "лайк успешно удален");
-    }
+//    public Map<String, String> deleteLike(Long filmId, Long userId) {
+//        checkFilmAndUserOrThrow(filmId, userId);
+//        throwIfLikeDoesNotExist(filmId, userId);
+//        User user = inMemoryUserStorage.getUsersMap().get(userId);
+//        Film film = inMemoryFilmStorage.getFilmsMap().get(filmId);
+//        //user.getFavoriteFilms().remove(filmId);
+//        //film.reduceAmountOfLikes();
+//        return Map.of("message", "лайк успешно удален");
+//    }
 
 //    public Collection<Film> getMostFavoriteFilms(Long count) {
 //        return inMemoryFilmStorage.getFilms().stream()
@@ -62,20 +62,20 @@ public class FilmService {
 //                .toList();
 //    }
 
-    private void throwIfAlreadyLiked(Long filmId, Long userId) {
-        User user = inMemoryUserStorage.getUsersMap().get(userId);
-        if (user.getFavoriteFilms().containsKey(filmId)) {
-            throw new DuplicatedDataException(String.format("Пользователь с id: %d уже поставил лайк фильму с id: %d", userId, filmId));
-        }
-    }
+//    private void throwIfAlreadyLiked(Long filmId, Long userId) {
+//        User user = inMemoryUserStorage.getUsersMap().get(userId);
+//        if (user.getFavoriteFilms().containsKey(filmId)) {
+//            throw new DuplicatedDataException(String.format("Пользователь с id: %d уже поставил лайк фильму с id: %d", userId, filmId));
+//        }
+//    }
 
-    private void throwIfLikeDoesNotExist(Long filmId, Long userId) {
-        User user = inMemoryUserStorage.getUsersMap().get(userId);
-        if (!user.getFavoriteFilms().containsKey(filmId)) {
-            throw new NotFoundDataException(String.format("У пользователь с id: %d нет лайка к фильму с id: %d",
-                    userId, filmId));
-        }
-    }
+//    private void throwIfLikeDoesNotExist(Long filmId, Long userId) {
+//        User user = inMemoryUserStorage.getUsersMap().get(userId);
+//        if (!user.getFavoriteFilms().containsKey(filmId)) {
+//            throw new NotFoundDataException(String.format("У пользователь с id: %d нет лайка к фильму с id: %d",
+//                    userId, filmId));
+//        }
+//    }
 
     private void checkFilmAndUserOrThrow(Long filmId, Long userId) {
         if (!inMemoryFilmStorage.getFilmsKeySet().contains(filmId)) {
