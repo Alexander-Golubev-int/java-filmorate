@@ -33,11 +33,6 @@ public class UserController {
         return userService.getUsers();
     }
 
-    @GetMapping(path = "/{id}")
-    public Optional<User> getUser(@PathVariable @Positive(message = "ID должен быть > 0") Long id) {
-        return userService.getUser(id);
-    }
-
     @GetMapping(path = "/{id}/friends")
     public Collection<User> getUsersFriends(@PathVariable @Positive(message = "ID должен быть > 0") Long id) {
         return userService.getFriendsUser(id);
