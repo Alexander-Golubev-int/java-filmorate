@@ -30,7 +30,7 @@ public class ExceptionHandler {
 
     @org.springframework.web.bind.annotation.ExceptionHandler(FriendshipAlreadyExistsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse friendshipAlreadyExistsException(ValidationException e) {
+    public ErrorResponse friendshipAlreadyExistsException(FriendshipAlreadyExistsException e) {
         return new ErrorResponse(e.getMessage());
     }
 

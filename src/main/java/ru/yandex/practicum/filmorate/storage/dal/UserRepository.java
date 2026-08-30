@@ -32,14 +32,27 @@ public class UserRepository {
             WHERE f.friendship_status_id = 2
               AND u.user_id != ?;
     """;
+    private static final String FIND_FRIENDSHIP = "SELECT COUNT(*) FROM \"Friendship\" WHERE from_user_id " +
+            "= ? AND to_user_id = ? AND friendship_status_id = 2";
     private static final String FIND_SUBMITTED_APPLICATION = "SELECT COUNT(*) FROM \"Friendship\" WHERE from_user_id = ? AND to_user_id = ? AND friendship_status_id = 1";
     private static final String FIND_BY_ID_QUERY = "SELECT * FROM \"Users\" WHERE user_id = ?";
     private static final String FIND_BY_ID_INCOMING_REQUEST = "SELECT COUNT(*) FROM \"IncomingRequestToFriends\" WHERE user_id = ? AND from_user_id = ?";
+
     private static final String INSERT_QUERY_PENDING = "INSERT INTO \"Friendship\"(from_user_id, to_user_id, friendship_status_id)" +
             "VALUES (?, ?, 1)";
     private static final String INSERT_QUERY_INCOMING_REQUEST_TO_FRIENDS = "INSERT INTO \"IncomingRequestToFriends\"(user_id, from_user_id)" +
             "VALUES (?, ?)";
-    private static final String UPDATE_QUERY = "UPDATE \"Users\" SET username = ?, email = ?, password = ? WHERE user_id = ?";
+    private static final String INSERT_QUERY_ACCEPTED = "INSERT INTO \"Friendship\"(from_user_id, to_user_id, " +
+            "friendship_status_id)" +
+            "VALUES (?, ?, 2)";
+
+    private static final String UPDATE_QUERY_FRIENDSHIP = "UPDATE \"Friendship\" SET friendship_status_id = 2 WHERE " +
+            "from_user_id = ? AND to_user_id = ?;";
+
+    private static final String DELETE_QUERY_INCOMING_REQUEST_TO_FRIENDS = "DELETE FROM \"IncomingRequestToFriends\" " +
+            "WHERE user_id = ? AND from_user_id = ?;";
+    private static final String DELETE_QUERY_FRIENDSHIPS = "DELETE FROM \"Friendship\" " +
+            "WHERE from_user_id = ? AND to_user_id = ?;";
 
     public List<User> findAll() {
         return jdbc.query(FIND_ALL_QUERY, new RowMapperUser());
@@ -54,14 +67,32 @@ public class UserRepository {
         return list.stream().findFirst();
     }
 
+    public boolean areFriends(Long userId, Long friendId) {
+        return jdbc.queryForObject(FIND_FRIENDSHIP, Integer.class, userId, friendId) > 0;
+    }
+
     public boolean isAnIncomingRequest(Long id, Long fromUserId) {
-        Integer count = jdbc.queryForObject(FIND_BY_ID_INCOMING_REQUEST, Integer.class, id, fromUserId);
-        return count > 0;
+        return jdbc.queryForObject(FIND_BY_ID_INCOMING_REQUEST, Integer.class, id, fromUserId) > 0;
     }
 
     public boolean isFriendRequestPending(Long id, Long friendId) {
-        Integer count = jdbc.queryForObject(FIND_SUBMITTED_APPLICATION, Integer.class, id, friendId);
-        return count > 0;
+        return jdbc.queryForObject(FIND_SUBMITTED_APPLICATION, Integer.class, id, friendId) > 0;
+    }
+
+    public void confirmFriendship(Long friendId, Long userId) {
+        jdbc.update(UPDATE_QUERY_FRIENDSHIP, friendId, userId);
+    }
+
+    public void addNewFriendAfterConfirmFriendship(Long userId, Long friendId) {
+        jdbc.update(INSERT_QUERY_ACCEPTED, userId, friendId);
+    }
+
+    public void deleteIncomingRequestToFriends(Long userId, Long friendId) {
+        jdbc.update(DELETE_QUERY_INCOMING_REQUEST_TO_FRIENDS, userId, friendId);
+    }
+
+    public void deleteFriendships(Long userId, Long friendId) {
+        jdbc.update(DELETE_QUERY_FRIENDSHIPS, userId, friendId);
     }
 
     public void addNewFriend(Long user_id, Long friendId) {
@@ -101,7 +132,7 @@ public class UserRepository {
             });
             return rowsAffected > 0;
         } catch (DuplicateKeyException e) {
-            throw new ValidationException("Ошибка в методе insertWithoutKeys");
+            throw new ValidationException("Ошибка в методе insertWithoutKeys при вставке данных");
         }
     }
 

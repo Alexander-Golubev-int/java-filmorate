@@ -19,7 +19,6 @@ import ru.yandex.practicum.filmorate.validator.Update;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
