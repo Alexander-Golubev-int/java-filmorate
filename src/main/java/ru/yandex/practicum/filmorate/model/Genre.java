@@ -6,5 +6,13 @@ public enum Genre {
     CARTOON,
     THRILLER,
     DOCUMENTARY,
-    ACTION
+    ACTION;
+
+    public static Genre fromString(String name) {
+        try {
+            return valueOf(name);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
 }

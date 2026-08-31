@@ -12,8 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.dal.dto.FilmDto;
+import ru.yandex.practicum.filmorate.storage.dal.dto.GenreDto;
 import ru.yandex.practicum.filmorate.storage.dal.dto.NewFilmRequest;
 import ru.yandex.practicum.filmorate.storage.dal.dto.UpdateFilmRequestDto;
 import ru.yandex.practicum.filmorate.storage.service.FilmService;
@@ -34,10 +35,20 @@ public class FilmController {
         return filmService.getFilms();
     }
 
-//    @GetMapping(value = "/popular")
-//    public Collection<Film> getPopularsFilms(@RequestParam(defaultValue = "10") Long count) {
-//        return filmService.getMostFavoriteFilms(count);
-//    }
+    @GetMapping(value = "/genre")
+    public Collection<GenreDto> getGenre() {
+        return filmService.getGenre();
+    }
+
+    @GetMapping(value = "/genre/{id}")
+    public GenreDto getGenre(@PathVariable @Positive(message = "ID должен быть > 0") Long id) {
+        return filmService.getGenreId(id);
+    }
+
+    @GetMapping(value = "/popular")
+    public Collection<FilmDto> getPopularsFilms(@RequestParam(defaultValue = "10") Long count) {
+        return filmService.getMostFavoriteFilms(count);
+    }
 
     @PostMapping
     public FilmDto createFilm(@Validated(Create.class) @RequestBody NewFilmRequest film) {

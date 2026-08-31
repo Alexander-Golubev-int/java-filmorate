@@ -4,15 +4,18 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.DuplicatedDataException;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundDataException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
 import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.storage.dal.dto.FilmDto;
+import ru.yandex.practicum.filmorate.storage.dal.dto.GenreDto;
 import ru.yandex.practicum.filmorate.storage.dal.dto.NewFilmRequest;
 import ru.yandex.practicum.filmorate.storage.dal.dto.UpdateFilmRequestDto;
 import ru.yandex.practicum.filmorate.storage.dal.repository.FilmRepository;
@@ -28,11 +31,17 @@ import java.util.Map;
 public class FilmService {
     private final FilmRepository filmRepository;
     private final UserService userService;
-    private final UserRepository userRepository;
-
     //DONE
     public Collection<FilmDto> getFilms() {
         return filmRepository.findAll();
+    }
+
+    public Collection<GenreDto> getGenre() {
+        return filmRepository.findAllGenre();
+    }
+
+    public GenreDto getGenreId(Long id) {
+        return filmRepository.findGenreById(id);
     }
     //DONE
     public FilmDto createFilm(NewFilmRequest film) {
@@ -64,12 +73,9 @@ public class FilmService {
         return Map.of("message", "лайк успешно удален");
     }
 
-//    public Collection<Film> getMostFavoriteFilms(Long count) {
-//        return inMemoryFilmStorage.getFilms().stream()
-//                .sorted(Comparator.comparingInt(Film::getLikes).reversed())
-//                .limit(count)
-//                .toList();
-//    }
+    public Collection<FilmDto> getMostFavoriteFilms(Long count) {
+        return filmRepository.findMostPopularFilms(count);
+    }
 
     private void throwIfAlreadyLiked(Long filmId, Long userId) {
         if (filmRepository.hasLike(userId, filmId)) {

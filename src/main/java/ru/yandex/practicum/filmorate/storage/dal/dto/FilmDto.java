@@ -11,4 +11,5 @@ public class FilmDto {
     private String description;
     private LocalDate releaseDate;
     private Integer duration;
+    private Integer likes;
 }

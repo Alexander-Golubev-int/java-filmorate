@@ -6,8 +6,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.dal.dto.*;
+import ru.yandex.practicum.filmorate.storage.dal.mappers.PopularFilmRowMapper;
 import ru.yandex.practicum.filmorate.storage.dal.mappers.RowMapperFilm;
+import ru.yandex.practicum.filmorate.storage.dal.mappers.RowMapperGenreDto;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
@@ -25,10 +28,19 @@ public class FilmRepository {
     private static final String FIND_LIKE =
             "SELECT COUNT(*) FROM \"FavoriteFilms\" " +
                     "WHERE user_id = ? AND film_id = ?";
-//    private static final String FIND_FRIENDSHIP = "SELECT COUNT(*) FROM \"Friendship\" WHERE from_user_id " +
-//            "= ? AND to_user_id = ? AND friendship_status_id = 2";
-//    private static final String FIND_SUBMITTED_APPLICATION = "SELECT COUNT(*) FROM \"Friendship\" WHERE from_user_id = ? AND to_user_id = ? AND friendship_status_id = 1";
-    private static final String FIND_BY_ID_QUERY = "SELECT * FROM \"Films\" WHERE film_id = ?";
+    private static final String FIND_POPULAR_FILMS =
+            """
+                            SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.age_rating_id,\s
+                                   COUNT(ff.user_id) AS likes
+                            FROM "Films" f
+                            LEFT JOIN "FavoriteFilms" ff ON f.film_id = ff.film_id
+                            GROUP BY f.film_id, f.name, f.description, f.release_date, f.duration, f.age_rating_id
+                            ORDER BY likes DESC
+                            LIMIT ?;
+                    """;
+    private static final String FIND_GENRE_BY_ID_QUERY = "SELECT * FROM \"Genre\" WHERE id = ?;";
+    private static final String FIND_ALL_GENRE = "SELECT * FROM \"Genre\";";
+   private static final String FIND_BY_ID_QUERY = "SELECT * FROM \"Films\" WHERE film_id = ?";
     //    private static final String FIND_BY_ID_INCOMING_REQUEST = "SELECT COUNT(*) FROM \"IncomingRequestToFriends\" WHERE user_id = ? AND from_user_id = ?";
 //    private static final String FIND_COMMON_FRIENDS = """
 //    SELECT DISTINCT (u.*)
@@ -59,7 +71,7 @@ public class FilmRepository {
 
     private static final String INSERT_NEW_LIKE = "INSERT INTO \"FavoriteFilms\"(user_id, film_id)" +
             "VALUES (?, ?)";
-//
+    //
 //    private static final String UPDATE_QUERY_FRIENDSHIP = "UPDATE \"Friendship\" SET friendship_status_id = 2 WHERE " +
 //            "from_user_id = ? AND to_user_id = ?;";
     private static final String UPDATE_FILM =
@@ -82,13 +94,19 @@ public class FilmRepository {
                 .toList();
     }
 
-    //
-//    public List<UserDto> findAllFriends(long userId) {
-//        return jdbc.query(FIND_ALL_FRIENDS_USERS, new RowMapperUser(), userId, userId, userId).stream()
-//                .map(rowMapperUser::mapToUserDto)
-//                .toList();
-//    }
-//
+
+    public List<FilmDto> findMostPopularFilms(Long count) {
+        return jdbc.query(FIND_POPULAR_FILMS, new PopularFilmRowMapper(), count);
+    }
+
+    public List<GenreDto> findAllGenre() {
+        return jdbc.query(FIND_ALL_GENRE, new RowMapperGenreDto());
+    }
+
+    public GenreDto findGenreById(Long id) {
+        return jdbc.queryForObject(FIND_GENRE_BY_ID_QUERY, new RowMapperGenreDto(), id);
+    }
+
     public Optional<FilmDto> findById(long filmId) {
         List<FilmDto> list = jdbc.query(FIND_BY_ID_QUERY, rowMapperFilm, filmId).stream()
                 .map(rowMapperFilm::mapToFilmDto)
@@ -139,7 +157,8 @@ public class FilmRepository {
         List<Integer> results = jdbc.queryForList(FIND_LIKE, Integer.class, userId, filmId);
         return !results.isEmpty() && results.get(0) > 0;
     }
-//
+
+    //
 //    public boolean isAnIncomingRequest(Long id, Long fromUserId) {
 //        return jdbc.queryForObject(FIND_BY_ID_INCOMING_REQUEST, Integer.class, id, fromUserId) > 0;
 //    }
