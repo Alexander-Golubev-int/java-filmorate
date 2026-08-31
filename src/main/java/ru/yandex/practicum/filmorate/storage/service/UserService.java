@@ -138,7 +138,7 @@ public class UserService {
         }
     }
     //DONE
-    private void checkUserOrThrow(Long id) {
+    public void checkUserOrThrow(Long id) {
         if(userRepository.findById(id).isEmpty()) {
             log.warn("Отправлен не проинициализированный пользователь: {}", id);
             throw new NotFoundDataException("Отправлен не проинициализированный пользователь: " + id);

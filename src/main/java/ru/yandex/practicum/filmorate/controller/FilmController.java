@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.storage.dal.dto.FilmDto;
+import ru.yandex.practicum.filmorate.storage.dal.dto.NewFilmRequest;
+import ru.yandex.practicum.filmorate.storage.dal.dto.UpdateFilmRequestDto;
 import ru.yandex.practicum.filmorate.storage.service.FilmService;
 import ru.yandex.practicum.filmorate.validator.Create;
 import ru.yandex.practicum.filmorate.validator.Update;
@@ -27,7 +30,7 @@ public class FilmController {
     private final FilmService filmService;
 
     @GetMapping
-    public Collection<Film> getFilms() {
+    public Collection<FilmDto> getFilms() {
         return filmService.getFilms();
     }
 
@@ -37,24 +40,24 @@ public class FilmController {
 //    }
 
     @PostMapping
-    public Film createFilm(@Validated(Create.class) @RequestBody Film film) {
+    public FilmDto createFilm(@Validated(Create.class) @RequestBody NewFilmRequest film) {
         return filmService.createFilm(film);
     }
 
     @PutMapping
-    public Film updateFilm(@Validated(Update.class) @RequestBody Film film) {
+    public FilmDto updateFilm(@Validated(Update.class) @RequestBody UpdateFilmRequestDto film) {
         return filmService.updateFilm(film);
     }
 
-//    @PutMapping(value = "/{id}/like/{userId}")
-//    public Map<String, String> addLike(@PathVariable @Positive(message = "ID должен быть > 0") Long id,
-//                                       @PathVariable @Positive(message = "UserId должен быть > 0") Long userId) {
-//        return filmService.addLike(id, userId);
-//    }
-//
-//    @DeleteMapping(value = "/{id}/like/{userId}")
-//    public Map<String, String> deleteLike(@PathVariable @Positive(message = "ID должен быть > 0") Long id,
-//                                          @PathVariable @Positive(message = "UserId должен быть > 0") Long userId) {
-//        return filmService.deleteLike(id, userId);
-//    }
+    @PutMapping(value = "/{id}/like/{userId}")
+    public Map<String, String> addLike(@PathVariable @Positive(message = "ID должен быть > 0") Long id,
+                                       @PathVariable @Positive(message = "UserId должен быть > 0") Long userId) {
+        return filmService.addLike(id, userId);
+    }
+
+    @DeleteMapping(value = "/{id}/like/{userId}")
+    public Map<String, String> deleteLike(@PathVariable @Positive(message = "ID должен быть > 0") Long id,
+                                          @PathVariable @Positive(message = "UserId должен быть > 0") Long userId) {
+        return filmService.deleteLike(id, userId);
+    }
 }
