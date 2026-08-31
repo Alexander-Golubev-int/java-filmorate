@@ -13,10 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.storage.dal.dto.FilmDto;
-import ru.yandex.practicum.filmorate.storage.dal.dto.GenreDto;
-import ru.yandex.practicum.filmorate.storage.dal.dto.NewFilmRequest;
-import ru.yandex.practicum.filmorate.storage.dal.dto.UpdateFilmRequestDto;
+import ru.yandex.practicum.filmorate.storage.dal.dto.*;
 import ru.yandex.practicum.filmorate.storage.service.FilmService;
 import ru.yandex.practicum.filmorate.validator.Create;
 import ru.yandex.practicum.filmorate.validator.Update;
@@ -43,6 +40,16 @@ public class FilmController {
     @GetMapping(value = "/genre/{id}")
     public GenreDto getGenre(@PathVariable @Positive(message = "ID должен быть > 0") Long id) {
         return filmService.getGenreId(id);
+    }
+
+    @GetMapping(value = "/mpa")
+    public Collection<AgeRatingDto> getMpa() {
+        return filmService.getMpa();
+    }
+
+    @GetMapping(value = "/mpa/{id}")
+    public AgeRatingDto getMpaById(@PathVariable @Positive(message = "ID должен быть > 0") Long id) {
+        return filmService.getMpaById(id);
     }
 
     @GetMapping(value = "/popular")

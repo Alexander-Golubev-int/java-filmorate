@@ -14,5 +14,6 @@ public class Film {
     private LocalDate releaseDate;
     private Integer duration;
     private AgeRating ageRating;
+    private Genre genre;
 }
 

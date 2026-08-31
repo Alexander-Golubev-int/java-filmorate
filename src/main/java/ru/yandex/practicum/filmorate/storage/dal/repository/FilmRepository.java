@@ -2,13 +2,15 @@ package ru.yandex.practicum.filmorate.storage.dal.repository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.exceptions.NotFoundDataException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.dal.dto.*;
 import ru.yandex.practicum.filmorate.storage.dal.mappers.PopularFilmRowMapper;
+import ru.yandex.practicum.filmorate.storage.dal.mappers.RowMapperAgeRating;
 import ru.yandex.practicum.filmorate.storage.dal.mappers.RowMapperFilm;
 import ru.yandex.practicum.filmorate.storage.dal.mappers.RowMapperGenreDto;
 
@@ -24,7 +26,12 @@ import java.util.Optional;
 public class FilmRepository {
     private final JdbcTemplate jdbc;
     private final RowMapperFilm rowMapperFilm;
-    private static final String FIND_ALL_QUERY = "SELECT * FROM \"Films\"";
+    private static final String FIND_ALL_QUERY = """
+    SELECT f.* 
+    FROM \"Films\" f
+    JOIN \"FilmGenre\" fg
+    ON f.film_id = fg.film_id;
+    """;
     private static final String FIND_LIKE =
             "SELECT COUNT(*) FROM \"FavoriteFilms\" " +
                     "WHERE user_id = ? AND film_id = ?";
@@ -40,40 +47,17 @@ public class FilmRepository {
                     """;
     private static final String FIND_GENRE_BY_ID_QUERY = "SELECT * FROM \"Genre\" WHERE id = ?;";
     private static final String FIND_ALL_GENRE = "SELECT * FROM \"Genre\";";
-   private static final String FIND_BY_ID_QUERY = "SELECT * FROM \"Films\" WHERE film_id = ?";
-    //    private static final String FIND_BY_ID_INCOMING_REQUEST = "SELECT COUNT(*) FROM \"IncomingRequestToFriends\" WHERE user_id = ? AND from_user_id = ?";
-//    private static final String FIND_COMMON_FRIENDS = """
-//    SELECT DISTINCT (u.*)
-//    FROM "Users" u
-//    JOIN "Friendship" f1 ON (
-//            (f1.from_user_id = ? AND f1.to_user_id = u.user_id)
-//    OR
-//            (f1.to_user_id = ? AND f1.from_user_id = u.user_id)
-//        )
-//    JOIN "Friendship" f2 ON (
-//            (f2.from_user_id = ? AND f2.to_user_id = u.user_id)
-//    OR
-//            (f2.to_user_id = ? AND f2.from_user_id = u.user_id)
-//        )
-//    WHERE f1.friendship_status_id = 2
-//    AND f2.friendship_status_id = 2
-//    AND u.user_id NOT IN (?, ?)
-//    """;
-//    private static final String INSERT_QUERY_PENDING = "INSERT INTO \"Friendship\"(from_user_id, to_user_id, friendship_status_id)" +
-//            "VALUES (?, ?, 1)";
-//    private static final String INSERT_QUERY_INCOMING_REQUEST_TO_FRIENDS = "INSERT INTO \"IncomingRequestToFriends\"(user_id, from_user_id)" +
-//            "VALUES (?, ?)";
-//    private static final String INSERT_QUERY_ACCEPTED = "INSERT INTO \"Friendship\"(from_user_id, to_user_id, " +
-//            "friendship_status_id)" +
-//            "VALUES (?, ?, 2)";
+    private static final String FIND_ALL_MPA = "SELECT * FROM \"AgeRating\";";
+    private static final String FIND_MPA_BY_ID_QUERY = "SELECT * FROM \"AgeRating\" WHERE id = ?;";
+    private static final String FIND_BY_ID_QUERY = "SELECT * FROM \"Films\" WHERE film_id = ?";
+
+    private static final String INSERT_NEW_GENRE_TO_FILM = "INSERT INTO \"FilmGenre\"(film_id, genre_id) " +
+            "VALUES (?, ?);";
     private static final String INSERT_NEW_FILM = "INSERT INTO \"Films\"(name, description, release_date, duration, age_rating_id)" +
             "VALUES (?, ?, ?, ?, ?)";
-
     private static final String INSERT_NEW_LIKE = "INSERT INTO \"FavoriteFilms\"(user_id, film_id)" +
             "VALUES (?, ?)";
-    //
-//    private static final String UPDATE_QUERY_FRIENDSHIP = "UPDATE \"Friendship\" SET friendship_status_id = 2 WHERE " +
-//            "from_user_id = ? AND to_user_id = ?;";
+
     private static final String UPDATE_FILM =
             """
                     UPDATE \"Films\" 
@@ -82,9 +66,6 @@ public class FilmRepository {
                     WHERE film_id = ?
                     """;
 
-    //
-//    private static final String DELETE_QUERY_INCOMING_REQUEST_TO_FRIENDS = "DELETE FROM \"IncomingRequestToFriends\" " +
-//            "WHERE user_id = ? AND from_user_id = ?;";
     private static final String DELETE_LIKE_FROM_FILM = "DELETE FROM \"FavoriteFilms\" " +
             "WHERE user_id = ? AND film_id = ?;";
 
@@ -94,7 +75,6 @@ public class FilmRepository {
                 .toList();
     }
 
-
     public List<FilmDto> findMostPopularFilms(Long count) {
         return jdbc.query(FIND_POPULAR_FILMS, new PopularFilmRowMapper(), count);
     }
@@ -103,8 +83,42 @@ public class FilmRepository {
         return jdbc.query(FIND_ALL_GENRE, new RowMapperGenreDto());
     }
 
+    public List<AgeRatingDto> findAllMpa() {
+        return jdbc.query(FIND_ALL_MPA, new RowMapperAgeRating());
+    }
+
+    public AgeRatingDto findMpaById(Long id) {
+        try {
+            return jdbc.queryForObject(FIND_MPA_BY_ID_QUERY, new RowMapperAgeRating(), id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundDataException("Указанный возрастной рейтинг не найден");
+        }
+    }
+
     public GenreDto findGenreById(Long id) {
         return jdbc.queryForObject(FIND_GENRE_BY_ID_QUERY, new RowMapperGenreDto(), id);
+    }
+
+    public void addNewGenreToFilmForFirstAdd(NewFilmRequest film, FilmDto filmDto) {
+        jdbc.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(
+                    INSERT_NEW_GENRE_TO_FILM
+            );
+            ps.setString(1, filmDto.getId().toString());
+            ps.setString(2, String.valueOf(film.getGenre().getId()));
+            return ps;
+        });
+    }
+
+    public void addNewGenreToFilm(UpdateFilmRequestDto film) {
+        jdbc.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(
+                    INSERT_NEW_GENRE_TO_FILM
+            );
+            ps.setString(1, film.getId().toString());
+            ps.setString(2, String.valueOf(film.getGenre()));
+            return ps;
+        });
     }
 
     public Optional<FilmDto> findById(long filmId) {
@@ -129,9 +143,9 @@ public class FilmRepository {
             ps.setObject(5, film.getAgeRating().getId());
             return ps;
         }, keyHolder);
-
         Long filmId = keyHolder.getKeyAs(Long.class);
         Film filmFromBd = jdbc.queryForObject(FIND_BY_ID_QUERY, rowMapperFilm, filmId);
+        addNewGenreToFilmForFirstAdd(film, rowMapperFilm.mapToFilmDto(filmFromBd));
         return rowMapperFilm.mapToFilmDto(filmFromBd);
     }
 
@@ -140,6 +154,7 @@ public class FilmRepository {
         filmFromBd = rowMapperFilm.updateFilmFields(filmFromBd, film);
         jdbc.update(UPDATE_FILM, filmFromBd.getName(), filmFromBd.getDescription(), filmFromBd.getReleaseDate(),
                 filmFromBd.getDuration(), filmFromBd.getAgeRating().getId(), filmFromBd.getId());
+        addNewGenreToFilm(film);
         filmFromBd = jdbc.queryForObject(FIND_BY_ID_QUERY, rowMapperFilm, filmFromBd.getId());
         return rowMapperFilm.mapToFilmDto(filmFromBd);
     }
@@ -158,77 +173,7 @@ public class FilmRepository {
         return !results.isEmpty() && results.get(0) > 0;
     }
 
-    //
-//    public boolean isAnIncomingRequest(Long id, Long fromUserId) {
-//        return jdbc.queryForObject(FIND_BY_ID_INCOMING_REQUEST, Integer.class, id, fromUserId) > 0;
-//    }
-//
-//    public boolean isFriendRequestPending(Long id, Long friendId) {
-//        return jdbc.queryForObject(FIND_SUBMITTED_APPLICATION, Integer.class, id, friendId) > 0;
-//    }
-//
-//    public void confirmFriendship(Long friendId, Long userId) {
-//        jdbc.update(UPDATE_QUERY_FRIENDSHIP, friendId, userId);
-//    }
-//
-//    public void addNewFriendAfterConfirmFriendship(Long userId, Long friendId) {
-//        jdbc.update(INSERT_QUERY_ACCEPTED, userId, friendId);
-//    }
-//
     public void deleteLikeFromFilm(Long userId, Long friendId) {
         jdbc.update(DELETE_LIKE_FROM_FILM, userId, friendId);
     }
-//
-//    public void deleteFriendships(Long userId, Long friendId) {
-//        jdbc.update(DELETE_QUERY_FRIENDSHIPS, userId, friendId);
-//    }
-//
-//    public void addNewFriend(Long user_id, Long friendId) {
-//        try {
-//            if (insertWithoutKeys(INSERT_QUERY_PENDING, user_id, friendId)) {
-//                log.info("Пользователь {} отправил заявку на добавление в друзья пользователю {}", user_id, friendId);
-//            }
-//
-//        } catch (DuplicateKeyException e) {
-//            log.warn("Не удалось сохранить запрос на отправку дружбы от: {} к {}", user_id, friendId);
-//            throw new ValidationException("Не удалось сохранить запрос на отправку дружбы от: " +
-//                    "from_user_id=" + user_id + ", to_user_id=" + friendId);
-//        }
-//    }
-//
-//    public void addIncomingRequestToFriends(Long friendId, Long user_id) {
-//        try {
-//            if (insertWithoutKeys(INSERT_QUERY_INCOMING_REQUEST_TO_FRIENDS, friendId, user_id)) {
-//                log.info("Создана входящая заявка на добавление друга пользователю {} от {}", friendId,
-//                        user_id);
-//            }
-//        } catch (DuplicateKeyException e) {
-//            log.warn("Не удалось сохранить запрос на создание заявки в друзья между пользователем {} и {}",
-//                    friendId, user_id);
-//            throw new ValidationException(String.format("Не удалось сохранить запрос на создание заявки в друзья между пользователем %s и %s",
-//                    friendId, user_id));
-//        }
-//    }
-//
-//    public boolean insertWithoutKeys(String sql, Long userId, Long friendId) {
-//        try {
-//            int rowsAffected = jdbc.update(connection -> {
-//                PreparedStatement ps = connection.prepareStatement(sql);
-//                ps.setLong(1, userId);
-//                ps.setLong(2, friendId);
-//                return ps;
-//            });
-//            return rowsAffected > 0;
-//        } catch (DuplicateKeyException e) {
-//            throw new ValidationException("Ошибка в методе insertWithoutKeys при вставке данных");
-//        }
-//    }
-//
-//    public List<UserDto> getCommonFriends(Long userId1, Long userId2) {
-//        return jdbc.query(FIND_COMMON_FRIENDS, new RowMapperUser(), userId1, userId1,
-//                        userId2, userId2,
-//                        userId1, userId2).stream()
-//                .map(rowMapperUser::mapToUserDto)
-//                .toList();
-//    }
 }

@@ -1,28 +1,16 @@
 package ru.yandex.practicum.filmorate.storage.service;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.DuplicatedDataException;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundDataException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
-import ru.yandex.practicum.filmorate.storage.dal.dto.FilmDto;
-import ru.yandex.practicum.filmorate.storage.dal.dto.GenreDto;
-import ru.yandex.practicum.filmorate.storage.dal.dto.NewFilmRequest;
-import ru.yandex.practicum.filmorate.storage.dal.dto.UpdateFilmRequestDto;
+import ru.yandex.practicum.filmorate.storage.dal.dto.*;
 import ru.yandex.practicum.filmorate.storage.dal.repository.FilmRepository;
-import ru.yandex.practicum.filmorate.storage.dal.repository.UserRepository;
 
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.Map;
 
 @Slf4j
@@ -38,6 +26,14 @@ public class FilmService {
 
     public Collection<GenreDto> getGenre() {
         return filmRepository.findAllGenre();
+    }
+
+    public Collection<AgeRatingDto> getMpa() {
+        return filmRepository.findAllMpa();
+    }
+
+    public AgeRatingDto getMpaById(Long id) {
+        return filmRepository.findMpaById(id);
     }
 
     public GenreDto getGenreId(Long id) {

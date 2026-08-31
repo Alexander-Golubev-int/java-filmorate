@@ -126,6 +126,7 @@ public class UserRepository {
         userFromBd = rowMapperUser.updateUserFields(userFromBd, user);
         jdbc.update(UPDATE_USER, userFromBd.getEmail(), userFromBd.getLogin(), user.getName(), userFromBd.getId());
         userFromBd = jdbc.queryForObject(FIND_BY_ID_QUERY, rowMapperUser, user.getId());
+
         return rowMapperUser.mapToUserDto(userFromBd);
     }
 
