@@ -12,7 +12,6 @@
     import org.springframework.web.bind.annotation.RequestMapping;
     import org.springframework.web.bind.annotation.RequestParam;
     import org.springframework.web.bind.annotation.RestController;
-    import ru.yandex.practicum.filmorate.model.Genre;
     import ru.yandex.practicum.filmorate.storage.dal.dto.*;
     import ru.yandex.practicum.filmorate.storage.service.FilmService;
     import ru.yandex.practicum.filmorate.validator.Create;

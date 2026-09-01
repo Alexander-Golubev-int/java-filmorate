@@ -25,6 +25,7 @@ public class RowMapperFilm implements RowMapper<Film> {
         film.setReleaseDate(rs.getObject("release_date", LocalDate.class));
         film.setDuration(rs.getInt("duration"));
         film.setAgeRating(AgeRating.fromId(rs.getInt("age_rating_id")));
+        film.setLikes(rs.getInt("likes"));
         return film;
     }
 
@@ -39,6 +40,7 @@ public class RowMapperFilm implements RowMapper<Film> {
         dto.setGenres(film.getGenres().stream()
                 .map(GenreDto::converterGenre)
                 .toList());
+        dto.setLikes(film.getLikes());
         return dto;
     }
 

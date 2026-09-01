@@ -17,5 +17,6 @@ public class Film {
     private Integer duration;
     private AgeRating ageRating;
     private List<Genre> genres = new ArrayList<>();
+    private Integer likes;
 }
 

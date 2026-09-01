@@ -1,7 +1,5 @@
 package ru.yandex.practicum.filmorate.storage.dal.mappers;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.User;

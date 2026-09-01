@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.DuplicatedDataException;
 import ru.yandex.practicum.filmorate.exceptions.FriendshipAlreadyExistsException;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundDataException;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.storage.dal.dto.NewUserRequest;
 import ru.yandex.practicum.filmorate.storage.dal.dto.UpdateUserRequestDto;
 import ru.yandex.practicum.filmorate.storage.dal.dto.UserDto;
@@ -23,20 +22,20 @@ public class UserService {
 
     private final Logger log = LoggerFactory.getLogger(UserService.class);
     private final UserRepository userRepository;
-    //DONE
+
     public Collection<UserDto> getUsers() {
         return userRepository.findAll();
     }
-    //DONE
+
     public UserDto createUser(NewUserRequest user) {
         return userRepository.addNewUser(user);
     }
-    //DONE
+
     public UserDto updateUser(UpdateUserRequestDto user) {
         checkUserOrThrow(user.getId());
         return userRepository.updateUser(user);
     }
-    //DONE
+
     public Map<String, String> addFriend(Long id, Long friendId) {
         if (id.equals(friendId)) {
             throw new DuplicatedDataException("Пользователь пытается добавить самого себя в друзья");
@@ -45,14 +44,12 @@ public class UserService {
         if (userRepository.areFriends(id, friendId)) {
             throw new FriendshipAlreadyExistsException(id, friendId);
         }
-        // Сразу создаём подтверждённую одностороннюю дружбу
         userRepository.addConfirmedFriend(id, friendId);
 
         log.info("Пользователь {} добавил в друзья пользователя {}", id, friendId);
         return Map.of("message", "Друг добавлен");
     }
 
-    //DONE
     public Map<String, String> confirmFriendship(Long id, Long friendId) {
         checkUserOrThrow(id, friendId);
 
@@ -89,18 +86,18 @@ public class UserService {
         log.info("Пользователь {} удалил пользователя {} из друзей", id, friendId);
         return Map.of("message", "Пользователь успешно удален");
     }
-    //DONE
+
     public Collection<UserDto> getFriendsUser(Long id) {
         checkUserOrThrow(id);
         return userRepository.findAllFriends(id);
     }
-    //DONE
+
     public Collection<UserDto> getMutualFriends(Long id, Long otherId) {
         checkUserOrThrow(id);
         checkUserOrThrow(otherId);
         return userRepository.getCommonFriends(id, otherId);
     }
-    //DONE
+
     private void checkUserOrThrow(Long id, Long friendId) {
         if (userRepository.findById(id).isEmpty()) {
             log.warn("Отправлен не проинициализированный пользователь при попытке добавить в друзья: {}", id);
@@ -112,7 +109,7 @@ public class UserService {
             throw new NotFoundDataException("Отправлен не проинициализированный пользователь: " + friendId);
         }
     }
-    //DONE
+
     public void checkUserOrThrow(Long id) {
         if(userRepository.findById(id).isEmpty()) {
             log.warn("Отправлен не проинициализированный пользователь: {}", id);

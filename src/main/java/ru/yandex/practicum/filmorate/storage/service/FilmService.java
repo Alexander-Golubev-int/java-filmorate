@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.storage.service;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -10,8 +9,8 @@ import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.storage.dal.dto.*;
 import ru.yandex.practicum.filmorate.storage.dal.repository.FilmRepository;
 
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -19,7 +18,7 @@ import java.util.Map;
 public class FilmService {
     private final FilmRepository filmRepository;
     private final UserService userService;
-    //DONE
+
     public Collection<FilmDto> getFilms() {
         return filmRepository.findAll();
     }
@@ -43,7 +42,7 @@ public class FilmService {
     public GenreDto getGenreId(Long id) {
         return filmRepository.findGenreById(id);
     }
-    //DONE
+
     public FilmDto createFilm(NewFilmRequest film) {
         filmRepository.findById(film.getMpa().getId());
         if (film.getGenres() != null) {
@@ -53,9 +52,24 @@ public class FilmService {
                 }
             }
         }
+        if (film.getGenres() != null) {
+            List<GenreDto> uniqueGenres = film.getGenres().stream()
+                    .filter(g -> g.getId() != null)
+                    .collect(Collectors.toMap(
+                            GenreDto::getId,
+                            g -> g,
+                            (existing, replacement) -> existing,  // оставляем первый
+                            LinkedHashMap::new
+                    ))
+                    .values()
+                    .stream()
+                    .toList();
+
+            film.setGenres(uniqueGenres);
+        }
         return filmRepository.addNewFilm(film);
     }
-    //DONE
+
     public FilmDto updateFilm(UpdateFilmRequestDto film) {
         try {
             checkFilmOrThrow(film.getId());
@@ -64,7 +78,7 @@ public class FilmService {
         }
         return filmRepository.updateFilm(film);
     }
-    //DONE
+
     public Map<String, String> addLike(Long filmId, Long userId) {
         checkFilmOrThrow(filmId);
         userService.checkUserOrThrow(userId);
