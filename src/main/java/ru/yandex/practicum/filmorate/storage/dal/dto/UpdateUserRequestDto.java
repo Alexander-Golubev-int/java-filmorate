@@ -21,11 +21,11 @@ public class UpdateUserRequestDto {
     public boolean hasEmail() {
         return email != null && !email.isBlank();
     }
-    
+
     public boolean hasLogin() {
         return login != null && !login.isBlank();
     }
-    
+
     public boolean hasName() {
         return name != null && !name.isBlank();
     }
