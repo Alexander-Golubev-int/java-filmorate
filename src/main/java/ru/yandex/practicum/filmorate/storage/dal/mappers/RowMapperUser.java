@@ -31,6 +31,8 @@ public final class RowMapperUser implements RowMapper<User> {
         dto.setId(user.getId());
         dto.setEmail(user.getEmail());
         dto.setName(user.getName());
+        dto.setLogin(user.getLogin());
+        dto.setBirthday(user.getBirthday());
         return dto;
     }
 
@@ -44,6 +46,8 @@ public final class RowMapperUser implements RowMapper<User> {
         if (request.hasName()) {
             user.setName(request.getName());
         }
+        if ((request.hasBirthday()))
+            user.setBirthday(user.getBirthday());
         return user;
     }
 }

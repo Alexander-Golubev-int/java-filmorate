@@ -65,6 +65,7 @@ public class UserService {
         userRepository.addNewFriend(id, friendId);
         userRepository.addIncomingRequestToFriends(friendId, id);
         log.info("Пользователь {} добавлен в список входящих заявок у пользователя {}", id, friendId);
+        confirmFriendship(id, friendId);
         return Map.of("message", "Друг добавлен");
     }
     //DONE

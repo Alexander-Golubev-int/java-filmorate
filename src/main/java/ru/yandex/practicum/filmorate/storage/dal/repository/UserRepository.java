@@ -71,8 +71,8 @@ public class UserRepository {
 
     private static final String UPDATE_QUERY_FRIENDSHIP = "UPDATE \"Friendship\" SET friendship_status_id = 2 WHERE " +
             "from_user_id = ? AND to_user_id = ?;";
-    private static final String UPDATE_USER = "UPDATE \"Users\" SET email = ?, login = ?, name = ? WHERE " +
-            "user_id = ?";
+    private static final String UPDATE_USER = "UPDATE \"Users\" SET email = ?, login = ?, name = ?, birthday = ? " +
+            "WHERE user_id = ?";
 
     private static final String DELETE_QUERY_INCOMING_REQUEST_TO_FRIENDS = "DELETE FROM \"IncomingRequestToFriends\" " +
             "WHERE user_id = ? AND from_user_id = ?;";
@@ -124,7 +124,8 @@ public class UserRepository {
     public UserDto updateUser(UpdateUserRequestDto user) {
         User userFromBd = jdbc.queryForObject(FIND_BY_ID_QUERY, rowMapperUser, user.getId());
         userFromBd = rowMapperUser.updateUserFields(userFromBd, user);
-        jdbc.update(UPDATE_USER, userFromBd.getEmail(), userFromBd.getLogin(), user.getName(), userFromBd.getId());
+        jdbc.update(UPDATE_USER, userFromBd.getEmail(), userFromBd.getLogin(), user.getName(),
+                user.getBirthday(), userFromBd.getId());
         userFromBd = jdbc.queryForObject(FIND_BY_ID_QUERY, rowMapperUser, user.getId());
 
         return rowMapperUser.mapToUserDto(userFromBd);

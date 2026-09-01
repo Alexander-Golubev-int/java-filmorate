@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import ru.yandex.practicum.filmorate.validator.Update;
 
+import java.time.LocalDate;
+
 @Data
 public class UpdateUserRequestDto {
     @NotNull(groups = Update.class, message = "Необходимо указать id пользователя")
@@ -14,7 +16,8 @@ public class UpdateUserRequestDto {
     private String email;
     private String login;
     private String name;
-    
+    private LocalDate birthday;
+
     public boolean hasEmail() {
         return email != null && !email.isBlank();
     }
@@ -25,5 +28,9 @@ public class UpdateUserRequestDto {
     
     public boolean hasName() {
         return name != null && !name.isBlank();
+    }
+
+    public boolean hasBirthday() {
+        return birthday != null;
     }
 }
