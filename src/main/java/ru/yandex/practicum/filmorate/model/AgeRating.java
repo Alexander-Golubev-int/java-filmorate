@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.model;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
+import ru.yandex.practicum.filmorate.storage.dal.dto.AgeRatingDto;
 
 import java.util.Arrays;
 
@@ -27,6 +28,14 @@ public enum AgeRating {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Неизвестный id: " + id));
     }
+
+    public static AgeRating fromMpa(AgeRatingDto ageRatingDto) {
+        return Arrays.stream(values())
+                .filter(rating -> rating.id == ageRatingDto.getId())
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Неизвестный id: " + ageRatingDto.getId()));
+    }
+
 
     @JsonValue
     public int getId() {

@@ -132,7 +132,11 @@
         }
 
         public GenreDto findGenreById(Long id) {
-            return jdbc.queryForObject(FIND_GENRE_BY_ID_QUERY, new RowMapperGenreDto(), id);
+            try {
+                return jdbc.queryForObject(FIND_GENRE_BY_ID_QUERY, new RowMapperGenreDto(), id);
+            } catch (EmptyResultDataAccessException e) {
+                throw new NotFoundDataException("Указанный id жанра не найден");
+            }
         }
 
         public void addNewGenreToFilm(Long filmId, Long genreId) {
@@ -186,28 +190,27 @@
 
         public FilmDto addNewFilm(NewFilmRequest film) {
             GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
+                jdbc.update(connection -> {
+                    PreparedStatement ps = connection.prepareStatement(
+                            INSERT_NEW_FILM,
+                            Statement.RETURN_GENERATED_KEYS
+                    );
+                    ps.setString(1, film.getName());
+                    ps.setString(2, film.getDescription());
+                    ps.setString(3, film.getReleaseDate().toString());
+                    ps.setObject(4, film.getDuration());
+                    ps.setObject(5, film.getMpa().getId());
+                    return ps;
+                }, keyHolder);
 
-            jdbc.update(connection -> {
-                PreparedStatement ps = connection.prepareStatement(
-                        INSERT_NEW_FILM,
-                        Statement.RETURN_GENERATED_KEYS
-                );
-                ps.setString(1, film.getName());
-                ps.setString(2, film.getDescription());
-                ps.setString(3, film.getReleaseDate().toString());
-                ps.setObject(4, film.getDuration());
-                ps.setObject(5, film.getMpa().getId());
-                return ps;
-            }, keyHolder);
-
-            Long filmId = keyHolder.getKeyAs(Long.class);
-            if (film.getGenres() != null && !film.getGenres().isEmpty()) {
-                for (GenreDto genre : film.getGenres()) {
-                    addNewGenreToFilm(filmId, genre.getId());
+                Long filmId = keyHolder.getKeyAs(Long.class);
+                if (film.getGenres() != null && !film.getGenres().isEmpty()) {
+                    for (GenreDto genre : film.getGenres()) {
+                        addNewGenreToFilm(filmId, genre.getId());
+                    }
                 }
+                return findById(filmId);
             }
-            return findById(filmId);
-        }
 
         public FilmDto updateFilm(UpdateFilmRequestDto film) {
             Film filmFromBd = jdbc.queryForObject(FIND_BY_ID_QUERY, rowMapperFilm, film.getId());

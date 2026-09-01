@@ -32,29 +32,14 @@
             return filmService.getFilms();
         }
 
-        @GetMapping(value = "/genre")
-        public Collection<GenreDto> getGenre() {
-            return filmService.getGenre();
-        }
-
-        @GetMapping(value = "/genre/{id}")
-        public GenreDto getGenre(@PathVariable @Positive(message = "ID должен быть > 0") Long id) {
-            return filmService.getGenreId(id);
-        }
-
-        @GetMapping(value = "/mpa")
-        public Collection<AgeRatingDto> getMpa() {
-            return filmService.getMpa();
-        }
-
-        @GetMapping(value = "/mpa/{id}")
-        public AgeRatingDto getMpaById(@PathVariable @Positive(message = "ID должен быть > 0") Long id) {
-            return filmService.getMpaById(id);
-        }
-
         @GetMapping(value = "/popular")
         public Collection<FilmDto> getPopularsFilms(@RequestParam(defaultValue = "10") Long count) {
             return filmService.getMostFavoriteFilms(count);
+        }
+
+        @GetMapping(value = "/{id}")
+        public FilmDto getFilmsById(@PathVariable @Positive(message = "ID должен быть > 0") Long id) {
+            return filmService.getFilmById(id);
         }
 
         @PostMapping

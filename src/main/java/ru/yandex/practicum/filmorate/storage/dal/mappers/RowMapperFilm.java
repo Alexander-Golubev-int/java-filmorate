@@ -56,7 +56,7 @@ public class RowMapperFilm implements RowMapper<Film> {
             film.setDuration(request.getDuration());
         }
         if (request.hasAgeRating()) {
-            film.setAgeRating(AgeRating.fromId(request.getAgeRating()));
+            film.setAgeRating(AgeRating.fromMpa(request.getMpa()));
         }
         return film;
     }

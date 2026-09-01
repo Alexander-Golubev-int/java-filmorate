@@ -36,11 +36,23 @@ public class FilmService {
         return filmRepository.findMpaById(id);
     }
 
+    public FilmDto getFilmById(Long id) {
+        return filmRepository.findById(id);
+    }
+
     public GenreDto getGenreId(Long id) {
         return filmRepository.findGenreById(id);
     }
     //DONE
     public FilmDto createFilm(NewFilmRequest film) {
+        filmRepository.findById(film.getMpa().getId());
+        if (film.getGenres() != null) {
+            for (GenreDto genre : film.getGenres()) {
+                if (genre.getId() == null || genre.getId() < 1 || genre.getId() > 6) {
+                    throw new NotFoundDataException("Жанр должен быть от 1 до 6");
+                }
+            }
+        }
         return filmRepository.addNewFilm(film);
     }
     //DONE
