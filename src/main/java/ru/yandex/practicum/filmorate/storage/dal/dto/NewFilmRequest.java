@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.storage.dal.dto;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import ru.yandex.practicum.filmorate.annotation.DateNotBefore;
-import ru.yandex.practicum.filmorate.model.AgeRating;
 import ru.yandex.practicum.filmorate.validator.Create;
 import ru.yandex.practicum.filmorate.validator.Update;
 
@@ -23,8 +22,7 @@ public class NewFilmRequest {
     @NotNull(groups = Create.class, message = "Продолжительность должна быть указана")
     @Min(groups = Create.class, value = 1, message = "Продолжительность должна быть положительным числом")
     private Integer duration;
-    @NotNull(groups = Create.class, message = "Должен быть указан рейтинг фильма от 1 - 5")
-    private AgeRating ageRating;
-    @NotNull(groups = Create.class, message = "Должен быть указан рейтинг жанра от 1 - 6")
-    private List <Integer> genre;
+    @NotNull(groups = Create.class, message = "Должен быть указан рейтинг MPA")
+    private AgeRatingDto mpa;
+    private List<GenreDto> genres;
 }

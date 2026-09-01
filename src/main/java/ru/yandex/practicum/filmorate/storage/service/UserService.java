@@ -38,36 +38,20 @@ public class UserService {
     }
     //DONE
     public Map<String, String> addFriend(Long id, Long friendId) {
-
         if (id.equals(friendId)) {
             throw new DuplicatedDataException("Пользователь пытается добавить самого себя в друзья");
         }
-
         checkUserOrThrow(id, friendId);
-
-        boolean areFriends = getFriendsUser(id).stream()
-                .anyMatch(user -> user.getId().equals(friendId));
-        boolean isHasPendingFriendRequest = userRepository.isFriendRequestPending(id, friendId);
-        boolean isAnIncomingRequest = userRepository.isAnIncomingRequest(id, friendId);
-
-        if (areFriends) {
-            log.warn("Попытка добавить в друзья пользователя, который уже находится в списке друзей");
+        if (userRepository.areFriends(id, friendId)) {
             throw new FriendshipAlreadyExistsException(id, friendId);
-        } else if (isHasPendingFriendRequest) {
-            log.warn("Попытка добавить в друзья пользователя, которому уже была отправлена заявка в друзья");
-            throw new DuplicatedDataException(String.format("Вы уже отправляли заявку на добавления в друзья пользователя %s", friendId));
-        } else if (isAnIncomingRequest) {
-            log.warn("Попытка добавить в друзья пользователя, который отправил пользователю заявку на добавление");
-            throw new DuplicatedDataException(String.format("Пользователь %s уже отправил вам заявку на добавления в " +
-                    "друзья. Подтвердите добавление или удалить его из друзей.", friendId));
         }
+        // Сразу создаём подтверждённую одностороннюю дружбу
+        userRepository.addConfirmedFriend(id, friendId);
 
-        userRepository.addNewFriend(id, friendId);
-        userRepository.addIncomingRequestToFriends(friendId, id);
-        log.info("Пользователь {} добавлен в список входящих заявок у пользователя {}", id, friendId);
-        confirmFriendship(id, friendId);
+        log.info("Пользователь {} добавил в друзья пользователя {}", id, friendId);
         return Map.of("message", "Друг добавлен");
     }
+
     //DONE
     public Map<String, String> confirmFriendship(Long id, Long friendId) {
         checkUserOrThrow(id, friendId);
@@ -92,26 +76,16 @@ public class UserService {
         log.info("Пользователь {} удален из списка входящих заявок на добавление", friendId);
         return Map.of("message", "Дружба подтверждена!😎");
     }
-    //DONE
+
     public Map<String, String> deleteFriend(Long id, Long friendId) {
         checkUserOrThrow(id, friendId);
 
-        boolean areFriends = getFriendsUser(id).stream()
-                .noneMatch(user -> user.getId().equals(friendId));
-        boolean hasIncomingRequest = userRepository.isAnIncomingRequest(id, friendId);
-        if (areFriends && !hasIncomingRequest) {
-            log.info("Пользователь {} не состоит в дружбе с пользователем {} удаление невозможно", id, friendId);
-            throw new NotFoundDataException("Пользователи не состоят в дружбе");
+        if (!userRepository.areFriends(id, friendId)) {
+            log.info("Пользователь {} не состоит в дружбе с {}, но удаление разрешено", id, friendId);
+            return Map.of("message", "Пользователь успешно удален");
         }
 
-        if (hasIncomingRequest) {
-            userRepository.deleteIncomingRequestToFriends(id, friendId);
-            userRepository.deleteFriendships(friendId, id);
-            return Map.of("message", "Заявка на принятия дружбы отклонена");
-
-        }
         userRepository.deleteFriendships(id, friendId);
-        userRepository.deleteFriendships(friendId, id);
         log.info("Пользователь {} удалил пользователя {} из друзей", id, friendId);
         return Map.of("message", "Пользователь успешно удален");
     }

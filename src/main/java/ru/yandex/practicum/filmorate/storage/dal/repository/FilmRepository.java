@@ -196,14 +196,14 @@
                 ps.setString(2, film.getDescription());
                 ps.setString(3, film.getReleaseDate().toString());
                 ps.setObject(4, film.getDuration());
-                ps.setObject(5, film.getAgeRating().getId());
+                ps.setObject(5, film.getMpa().getId());
                 return ps;
             }, keyHolder);
-            Long filmId = keyHolder.getKeyAs(Long.class);
 
-            if (film.getGenre() != null && !film.getGenre().isEmpty()) {
-                for (Integer genreId : film.getGenre()) {
-                    addNewGenreToFilm(filmId, genreId.longValue());
+            Long filmId = keyHolder.getKeyAs(Long.class);
+            if (film.getGenres() != null && !film.getGenres().isEmpty()) {
+                for (GenreDto genre : film.getGenres()) {
+                    addNewGenreToFilm(filmId, genre.getId());
                 }
             }
             return findById(filmId);

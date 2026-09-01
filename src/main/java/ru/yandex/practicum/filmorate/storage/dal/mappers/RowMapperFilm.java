@@ -4,6 +4,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.AgeRating;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.storage.dal.dto.AgeRatingDto;
 import ru.yandex.practicum.filmorate.storage.dal.dto.FilmDto;
 import ru.yandex.practicum.filmorate.storage.dal.dto.GenreDto;
 import ru.yandex.practicum.filmorate.storage.dal.dto.UpdateFilmRequestDto;
@@ -34,7 +35,7 @@ public class RowMapperFilm implements RowMapper<Film> {
         dto.setDescription(film.getDescription());
         dto.setReleaseDate(film.getReleaseDate());
         dto.setDuration(film.getDuration());
-        dto.setMpa(film.getAgeRating().getId());
+        dto.setMpa(AgeRatingDto.fromAgeRating(film.getAgeRating()));
         dto.setGenres(film.getGenres().stream()
                 .map(GenreDto::converterGenre)
                 .toList());

@@ -13,6 +13,6 @@ public class FilmDto {
     private LocalDate releaseDate;
     private Integer duration;
     private Integer likes;
-    private Integer mpa;
+    private AgeRatingDto mpa;
     private List<GenreDto> genres;
 }

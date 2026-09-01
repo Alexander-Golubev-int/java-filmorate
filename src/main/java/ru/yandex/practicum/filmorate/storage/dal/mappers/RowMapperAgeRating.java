@@ -13,7 +13,7 @@ public class RowMapperAgeRating implements RowMapper<AgeRatingDto> {
     public AgeRatingDto mapRow(ResultSet rs, int rowNum) throws SQLException {
         AgeRatingDto ageRating = new AgeRatingDto();
         ageRating.setId(rs.getLong("id"));
-        ageRating.setAgeRating(rs.getString("age_rating"));
+        ageRating.setName(rs.getString("age_rating"));
         return ageRating;
     }
 }

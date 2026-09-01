@@ -79,14 +79,47 @@ public class UserRepository {
     private static final String DELETE_QUERY_FRIENDSHIPS = "DELETE FROM \"Friendship\" " +
             "WHERE from_user_id = ? AND to_user_id = ?;";
 
-    public List<UserDto> findAll() {
-        return jdbc.query(FIND_ALL_QUERY, new RowMapperUser()).stream()
+    // === Константы ===
+    private static final String INSERT_CONFIRMED_FRIENDSHIP =
+            "INSERT INTO \"Friendship\"(from_user_id, to_user_id, friendship_status_id) VALUES (?, ?, 2)";
+
+    private static final String FIND_ALL_FRIENDS = """
+    SELECT u.*
+    FROM "Users" u
+    JOIN "Friendship" f ON f.to_user_id = u.user_id
+    WHERE f.from_user_id = ?
+      AND f.friendship_status_id = 2
+    """;
+
+    private static final String ARE_FRIENDS =
+            "SELECT COUNT(*) FROM \"Friendship\" WHERE from_user_id = ? AND to_user_id = ? AND friendship_status_id = 2";
+
+    private static final String DELETE_FRIENDSHIP =
+            "DELETE FROM \"Friendship\" WHERE from_user_id = ? AND to_user_id = ?";
+
+// === Методы ===
+
+    public void addConfirmedFriend(Long userId, Long friendId) {
+        jdbc.update(INSERT_CONFIRMED_FRIENDSHIP, userId, friendId);
+    }
+
+    public List<UserDto> findAllFriends(long userId) {
+        return jdbc.query(FIND_ALL_FRIENDS, new RowMapperUser(), userId).stream()
                 .map(rowMapperUser::mapToUserDto)
                 .toList();
     }
 
-    public List<UserDto> findAllFriends(long userId) {
-        return jdbc.query(FIND_ALL_FRIENDS_USERS, new RowMapperUser(), userId, userId, userId).stream()
+    public boolean areFriends(Long userId, Long friendId) {
+        Integer count = jdbc.queryForObject(ARE_FRIENDS, Integer.class, userId, friendId);
+        return count != null && count > 0;
+    }
+
+    public void deleteFriendships(Long userId, Long friendId) {
+        jdbc.update(DELETE_FRIENDSHIP, userId, friendId);
+    }
+
+    public List<UserDto> findAll() {
+        return jdbc.query(FIND_ALL_QUERY, new RowMapperUser()).stream()
                 .map(rowMapperUser::mapToUserDto)
                 .toList();
     }
@@ -131,10 +164,6 @@ public class UserRepository {
         return rowMapperUser.mapToUserDto(userFromBd);
     }
 
-    public boolean areFriends(Long userId, Long friendId) {
-        return jdbc.queryForObject(FIND_FRIENDSHIP, Integer.class, userId, friendId) > 0;
-    }
-
     public boolean isAnIncomingRequest(Long id, Long fromUserId) {
         return jdbc.queryForObject(FIND_BY_ID_INCOMING_REQUEST, Integer.class, id, fromUserId) > 0;
     }
@@ -153,10 +182,6 @@ public class UserRepository {
 
     public void deleteIncomingRequestToFriends(Long userId, Long friendId) {
         jdbc.update(DELETE_QUERY_INCOMING_REQUEST_TO_FRIENDS, userId, friendId);
-    }
-
-    public void deleteFriendships(Long userId, Long friendId) {
-        jdbc.update(DELETE_QUERY_FRIENDSHIPS, userId, friendId);
     }
 
     public void addNewFriend(Long user_id, Long friendId) {
