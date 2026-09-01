@@ -30,62 +30,28 @@ import java.util.Map;
 public class FilmRepository {
     private final JdbcTemplate jdbc;
     private final RowMapperFilm rowMapperFilm;
-    private static final String FIND_ALL_QUERY = """
-            SELECT f.*, fg.genre_id
-            FROM "Films" f
-            LEFT JOIN "FilmGenre" fg
-            ON f.film_id = fg.film_id
-            ORDER BY f.film_id;
-            """;
-    private static final String FIND_LIKE =
-            "SELECT COUNT(*) FROM \"FavoriteFilms\" " +
-                    "WHERE user_id = ? AND film_id = ?";
-    private static final String FIND_POPULAR_FILMS =
-            """
-                    SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.age_rating_id, COUNT(ff.user_id) AS likes
-                    FROM "Films" f
-                    LEFT JOIN "FavoriteFilms" ff ON f.film_id = ff.film_id
-                    GROUP BY f.film_id, f.name, f.description, f.release_date, f.duration, f.age_rating_id
-                    ORDER BY likes DESC
-                    LIMIT ?;
-                    """;
+    private static final String FIND_ALL_QUERY = "SELECT f.*, fg.genre_id FROM \"Films\" f LEFT JOIN \"FilmGenre\" fg " +
+            "ON f.film_id = fg.film_id ORDER BY f.film_id;";
+    private static final String FIND_LIKE = "SELECT COUNT(*) FROM \"FavoriteFilms\" WHERE user_id = ? AND film_id = ?";
+    private static final String FIND_POPULAR_FILMS = "SELECT f.film_id, f.name, f.description, f.release_date, f.duration," +
+            " f.age_rating_id, COUNT(ff.user_id) AS likes FROM \"Films\" f LEFT JOIN \"FavoriteFilms\" ff ON f.film_id = " +
+            "ff.film_id GROUP BY f.film_id, f.name, f.description, f.release_date, f.duration, f.age_rating_id ORDER BY " +
+            "likes DESC LIMIT ?;";
     private static final String FIND_GENRE_BY_ID_QUERY = "SELECT * FROM \"Genre\" WHERE id = ?;";
     private static final String FIND_ALL_GENRE = "SELECT * FROM \"Genre\";";
     private static final String FIND_ALL_MPA = "SELECT * FROM \"AgeRating\";";
     private static final String FIND_MPA_BY_ID_QUERY = "SELECT * FROM \"AgeRating\" WHERE id = ?;";
-    private static final String FIND_BY_ID_QUERY =
-            """
-                    SELECT f.*,
-                                           fg.genre_id,
-                                           (SELECT COUNT(*)
-                                            FROM "FavoriteFilms" ff
-                                            WHERE ff.film_id = f.film_id) AS likes
-                                    FROM "Films" f
-                                    LEFT JOIN "FilmGenre" fg
-                                    ON f.film_id = fg.film_id
-                                    WHERE f.film_id = ?
-                                    ORDER BY fg.genre_id;
-                    """;
-
-    private static final String INSERT_NEW_GENRE_TO_FILM = "INSERT INTO \"FilmGenre\"(film_id, genre_id) " +
-            "VALUES (?, ?);";
-    private static final String INSERT_NEW_FILM = "INSERT INTO \"Films\"(name, description, release_date, duration, age_rating_id)" +
-            "VALUES (?, ?, ?, ?, ?)";
-    private static final String INSERT_NEW_LIKE = "INSERT INTO \"FavoriteFilms\"(user_id, film_id)" +
-            "VALUES (?, ?)";
-
-    private static final String UPDATE_FILM =
-            """
-                    UPDATE \"Films\" 
-                    SET name = ?, description = ?, release_date = ?, 
-                    duration = ?, age_rating_id = ? 
-                    WHERE film_id = ?
-                    """;
-
-    private static final String DELETE_LIKE_FROM_FILM = "DELETE FROM \"FavoriteFilms\" " +
-            "WHERE user_id = ? AND film_id = ?;";
-    private static final String DELETE_GENRE_FROM_FILM = "DELETE FROM \"FilmGenre\" WHERE film_id = ? AND genre_id = " +
-            "?";
+    private static final String FIND_BY_ID_QUERY = "SELECT f.*, fg.genre_id, (SELECT COUNT(*) FROM \"FavoriteFilms\" ff " +
+            "WHERE ff.film_id = f.film_id) AS likes FROM \"Films\" f LEFT JOIN \"FilmGenre\" fg ON f.film_id = fg.film_id" +
+            " WHERE f.film_id = ? ORDER BY fg.genre_id;";
+    private static final String INSERT_NEW_GENRE_TO_FILM = "INSERT INTO \"FilmGenre\"(film_id, genre_id) VALUES (?, ?);";
+    private static final String INSERT_NEW_FILM = "INSERT INTO \"Films\"(name, description, release_date, duration, " +
+            "age_rating_id) VALUES (?, ?, ?, ?, ?)";
+    private static final String INSERT_NEW_LIKE = "INSERT INTO \"FavoriteFilms\"(user_id, film_id) VALUES (?, ?)";
+    private static final String UPDATE_FILM = "UPDATE \"Films\" SET name = ?, description = ?, release_date = ?, " +
+            "duration = ?, age_rating_id = ? WHERE film_id = ?";
+    private static final String DELETE_LIKE_FROM_FILM = "DELETE FROM \"FavoriteFilms\" WHERE user_id = ? AND film_id = ?;";
+    private static final String DELETE_GENRE_FROM_FILM = "DELETE FROM \"FilmGenre\" WHERE film_id = ? AND genre_id = ?";
 
     public List<FilmDto> findAll() {
         Map<Long, Film> films = new LinkedHashMap<>();
