@@ -4,8 +4,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.AgeRating;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.dal.dto.FilmDto;
+import ru.yandex.practicum.filmorate.storage.dal.dto.GenreDto;
 import ru.yandex.practicum.filmorate.storage.dal.dto.UpdateFilmRequestDto;
 
 import java.sql.ResultSet;
@@ -24,7 +24,6 @@ public class RowMapperFilm implements RowMapper<Film> {
         film.setReleaseDate(rs.getObject("release_date", LocalDate.class));
         film.setDuration(rs.getInt("duration"));
         film.setAgeRating(AgeRating.fromId(rs.getInt("age_rating_id")));
-        film.setGenre(Genre.fromId(rs.getInt("genre_id")));
         return film;
     }
 
@@ -35,7 +34,10 @@ public class RowMapperFilm implements RowMapper<Film> {
         dto.setDescription(film.getDescription());
         dto.setReleaseDate(film.getReleaseDate());
         dto.setDuration(film.getDuration());
-        dto.setMpa(film.getGenre().getId());
+        dto.setMpa(film.getAgeRating().getId());
+        dto.setGenres(film.getGenres().stream()
+                .map(GenreDto::converterGenre)
+                .toList());
         return dto;
     }
 
@@ -54,9 +56,6 @@ public class RowMapperFilm implements RowMapper<Film> {
         }
         if (request.hasAgeRating()) {
             film.setAgeRating(AgeRating.fromId(request.getAgeRating()));
-        }
-        if (request.hasGenre()) {
-            film.setGenre(Genre.fromId(request.getGenre()));
         }
         return film;
     }

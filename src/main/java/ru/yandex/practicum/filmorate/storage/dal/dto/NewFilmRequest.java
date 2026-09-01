@@ -4,11 +4,12 @@ import jakarta.validation.constraints.*;
 import lombok.Data;
 import ru.yandex.practicum.filmorate.annotation.DateNotBefore;
 import ru.yandex.practicum.filmorate.model.AgeRating;
-import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.validator.Create;
 import ru.yandex.practicum.filmorate.validator.Update;
 
 import java.time.LocalDate;
+import java.util.List;
+
 @Data
 public class NewFilmRequest {
     @NotBlank(groups = Create.class, message = "Название фильма не может быть пустым")
@@ -25,5 +26,5 @@ public class NewFilmRequest {
     @NotNull(groups = Create.class, message = "Должен быть указан рейтинг фильма от 1 - 5")
     private AgeRating ageRating;
     @NotNull(groups = Create.class, message = "Должен быть указан рейтинг жанра от 1 - 6")
-    private Genre genre;
+    private List <Integer> genre;
 }

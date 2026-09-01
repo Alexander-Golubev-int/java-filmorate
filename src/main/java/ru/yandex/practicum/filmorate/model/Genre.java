@@ -2,21 +2,25 @@ package ru.yandex.practicum.filmorate.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import lombok.Getter;
 
 import java.util.Arrays;
 
 public enum Genre {
-    COMEDY(1),
-    DRAMA(2),
-    CARTOON(3),
-    THRILLER(4),
-    DOCUMENTARY(5),
-    ACTION(6);
+    COMEDY(1, "Комедия"),
+    DRAMA(2, "Драма"),
+    CARTOON(3, "Мультфильм"),
+    THRILLER(4, "Триллер"),
+    DOCUMENTARY(5, "Документальный"),
+    ACTION(6, "Боевик");
 
     private final int id;
+    @Getter
+    private final String name;
 
-    Genre(int id) {
+    Genre(int id, String name) {
         this.id = id;
+        this.name = name;
     }
 
     @JsonCreator
@@ -31,4 +35,5 @@ public enum Genre {
     public int getId() {
         return id;
     }
+
 }

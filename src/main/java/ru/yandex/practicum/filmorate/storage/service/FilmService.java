@@ -79,6 +79,12 @@ public class FilmService {
         }
     }
 
+    public Map<String, String> deleteGenreFromFilm(Long filmId, Long genreId) {
+        checkFilmOrThrow(filmId);
+        filmRepository.deleteGenreFromFilm(filmId, genreId);
+        return Map.of("message", "жанр удален");
+    }
+
     private void throwIfLikeDoesNotExist(Long filmId, Long userId) {
         if (!filmRepository.hasLike(userId, filmId)) {
             throw new NotFoundDataException(String.format("У пользователь с id: %d нет лайка к фильму с id: %d",
@@ -87,9 +93,6 @@ public class FilmService {
     }
 
     private void checkFilmOrThrow(Long id) {
-        if (filmRepository.findById(id).isEmpty()) {
-            log.warn("Отправлен не существующий id:{} c фильмом", id);
-            throw new NotFoundDataException("Отправлен несуществующий id: " + id);
-        }
+        filmRepository.findById(id);
     }
 }

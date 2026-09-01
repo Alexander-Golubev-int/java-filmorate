@@ -6,9 +6,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import ru.yandex.practicum.filmorate.annotation.DateNotBefore;
-import ru.yandex.practicum.filmorate.model.AgeRating;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.validator.Create;
 import ru.yandex.practicum.filmorate.validator.Update;
 
 import java.time.LocalDate;
@@ -29,8 +26,6 @@ public class UpdateFilmRequestDto {
     private Integer duration;
     @NotNull(groups = Update.class, message = "Должен быть указан рейтинг фильма от 1 - 5")
     private Integer ageRating;
-    @NotNull(groups = Create.class, message = "Должен быть указан рейтинг жанра от 1 - 6")
-    private Integer genre;
 
     public boolean hasName() {
         return name != null && !name.isBlank();
@@ -50,10 +45,6 @@ public class UpdateFilmRequestDto {
 
     public boolean hasAgeRating() {
         return ageRating != null;
-    }
-
-    public boolean hasGenre() {
-        return genre != null;
     }
 }
 
