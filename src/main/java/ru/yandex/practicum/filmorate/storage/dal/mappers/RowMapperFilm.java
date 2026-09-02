@@ -36,9 +36,7 @@ public class RowMapperFilm implements RowMapper<Film> {
         dto.setDuration(film.getDuration());
         dto.getMpa().setId((film.getAgeRating()));
         dto.getMpa().setName(film.getMpa());
-        dto.setGenres(film.getGenres().stream()
-                .map(GenreDto::converterGenre)
-                .toList());
+        dto.setGenres(film.getGenres().stream().toList());
         dto.setLikes(film.getLikes());
         return dto;
     }

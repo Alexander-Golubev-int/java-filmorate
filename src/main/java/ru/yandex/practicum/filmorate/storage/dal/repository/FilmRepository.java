@@ -8,7 +8,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundDataException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.dal.dto.*;
 import ru.yandex.practicum.filmorate.storage.dal.mappers.PopularFilmRowMapper;
 import ru.yandex.practicum.filmorate.storage.dal.mappers.RowMapperAgeRating;
@@ -37,7 +36,6 @@ public class FilmRepository {
     private static final String FIND_ALL_GENRE = "SELECT * FROM \"Genre\";";
     private static final String FIND_ALL_MPA = "SELECT * FROM \"AgeRating\";";
     private static final String FIND_MPA_BY_ID_QUERY = "SELECT * FROM \"AgeRating\" WHERE id = ?;";
-    private static final String FIND_AND_GET_MPA_BY_ID_QUERY = "SELECT age_rating FROM \"AgeRating\" WHERE id = ?;";
     private static final String INSERT_NEW_GENRE_TO_FILM = "INSERT INTO \"FilmGenre\"(film_id, genre_id) VALUES (?, ?);";
     private static final String INSERT_NEW_FILM = "INSERT INTO \"Films\"(name, description, release_date, duration, " +
             "age_rating_id) VALUES (?, ?, ?, ?, ?)";
@@ -67,7 +65,8 @@ public class FilmRepository {
             int genreId = rs.getInt("genre_id");
 
             if (!rs.wasNull()) {
-                film.getGenres().add(Genre.fromId(genreId));
+                GenreDto genreDto = findGenreById((long) genreId);
+                film.getGenres().add(genreDto);
             }
         });
 
@@ -131,7 +130,8 @@ public class FilmRepository {
                     do {
                         int genreId = rs.getInt("genre_id");
                         if (!rs.wasNull()) {
-                            film.getGenres().add(Genre.fromId(genreId));
+                            GenreDto genreDto = findGenreById((long) genreId);
+                            film.getGenres().add(genreDto);
                         }
                     } while (rs.next());
                 }
