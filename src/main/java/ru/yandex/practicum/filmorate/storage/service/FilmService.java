@@ -47,9 +47,10 @@ public class FilmService {
         filmRepository.findMpaById(film.getMpa().getId());
         if (film.getGenres() != null) {
             for (GenreDto genre : film.getGenres()) {
-                if (genre.getId() == null || genre.getId() < 1 || genre.getId() > 6) {
-                    throw new NotFoundDataException("Жанр должен быть от 1 до 6");
+                if (genre.getId() == null) {
+                    throw new NotFoundDataException("Id жанра не может быть null");
                 }
+                filmRepository.findGenreById(genre.getId());
             }
         }
         if (film.getGenres() != null) {

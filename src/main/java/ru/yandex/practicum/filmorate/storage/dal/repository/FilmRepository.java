@@ -106,7 +106,7 @@ public class FilmRepository {
         try {
             return jdbc.queryForObject(FIND_GENRE_BY_ID_QUERY, new RowMapperGenreDto(), id);
         } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundDataException("Указанный id жанра не найден");
+            throw new NotFoundDataException("Указанный id: " + id + " жанра не найден");
         }
     }
 
@@ -177,9 +177,15 @@ public class FilmRepository {
 
         Long filmId = keyHolder.getKeyAs(Long.class);
         if (film.getGenres() != null && !film.getGenres().isEmpty()) {
-            for (GenreDto genre : film.getGenres()) {
-                addNewGenreToFilm(filmId, genre.getId());
-            }
+            jdbc.batchUpdate(
+                    INSERT_NEW_GENRE_TO_FILM,
+                    film.getGenres(),
+                    film.getGenres().size(),
+                    (ps, genre) -> {
+                        ps.setLong(1, filmId);
+                        ps.setLong(2, genre.getId());
+                    }
+            );
         }
         return findById(filmId);
     }
