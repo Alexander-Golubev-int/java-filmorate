@@ -84,12 +84,10 @@ class FilmoRateApplicationTests {
         request.setReleaseDate(LocalDate.of(2000, 1, 1));
         request.setDuration(100);
 
-        // MPA
         MpaDto mpa = new MpaDto();
         mpa.setId(1L);
         request.setMpa(mpa);
 
-        // Genre
         GenreDto genre = new GenreDto();
         genre.setId(1L);
         request.setGenres(List.of(genre));
@@ -102,19 +100,16 @@ class FilmoRateApplicationTests {
         assertThat(created.getDescription()).isEqualTo("Test Description");
         assertThat(created.getDuration()).isEqualTo(100);
 
-        // Проверяем, что mpa теперь объект
         assertThat(created.getMpa()).isNotNull();
         assertThat(created.getMpa().getId()).isEqualTo(1L);
         assertThat(created.getMpa().getName()).isNotBlank(); // например "G"
 
-        // Проверяем жанры
         assertThat(created.getGenres()).isNotEmpty();
         assertThat(created.getGenres().get(0).getId()).isEqualTo(1L);
     }
 
     @Test
     void testFindFilmById() {
-        // Сначала создаём фильм
         NewFilmRequest request = new NewFilmRequest();
         request.setName("Find Me Film");
         request.setDescription("Description");
@@ -140,7 +135,7 @@ class FilmoRateApplicationTests {
     void testFindAllGenres() {
         List<GenreDto> genres = filmRepository.findAllGenre();
         assertThat(genres).isNotNull();
-        assertThat(genres).isNotEmpty(); // обычно в схеме есть предустановленные жанры
+        assertThat(genres).isNotEmpty();
     }
 
     @Test
