@@ -44,7 +44,7 @@ public class FilmService {
     }
 
     public FilmDto createFilm(NewFilmRequest film) {
-        filmRepository.findById(film.getMpa().getId());
+        filmRepository.findMpaById(film.getMpa().getId());
         if (film.getGenres() != null) {
             for (GenreDto genre : film.getGenres()) {
                 if (genre.getId() == null || genre.getId() < 1 || genre.getId() > 6) {
