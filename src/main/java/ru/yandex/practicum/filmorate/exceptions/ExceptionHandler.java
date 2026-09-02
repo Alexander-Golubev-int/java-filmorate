@@ -59,4 +59,11 @@ public class ExceptionHandler {
         log.warn("Ошибка при обработке данных: {}", ex.getMessage());
         return new ErrorResponse("Некорректный JSON или неверный формат данных");
     }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleHttpMessageInternalServerError(Exception ex) {
+        log.warn("Внутреняя ошибка сервера: {}", ex.getMessage(), ex);
+        return new ErrorResponse("При обработке запроса произошла ошибка");
+    }
 }

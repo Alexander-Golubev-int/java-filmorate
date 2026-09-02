@@ -4,7 +4,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.dal.dto.FilmDto;
-import ru.yandex.practicum.filmorate.storage.dal.dto.GenreDto;
 import ru.yandex.practicum.filmorate.storage.dal.dto.UpdateFilmRequestDto;
 
 import java.sql.ResultSet;

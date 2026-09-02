@@ -24,6 +24,7 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
+@Validated
 @RequestMapping("/users")
 public class UserController {
 

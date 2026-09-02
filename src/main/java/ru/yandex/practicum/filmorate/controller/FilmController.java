@@ -20,6 +20,7 @@
     import java.util.Collection;
     import java.util.Map;
 
+    @Validated
     @RestController
     @RequiredArgsConstructor
     @RequestMapping("/films")
