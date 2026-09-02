@@ -59,9 +59,7 @@ public class FilmService {
                     .collect(Collectors.toMap(
                             GenreDto::getId,
                             g -> g,
-                            (existing, replacement) -> existing,  // оставляем первый
-                            LinkedHashMap::new
-                    ))
+                            (existing, replacement) -> existing,LinkedHashMap::new))
                     .values()
                     .stream()
                     .toList();

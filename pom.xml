@@ -77,7 +77,9 @@
 							<version>1.18.34</version>
 						</path>
 					</annotationProcessorPaths>
-				</configuration>
+                    <source>9</source>
+                    <target>9</target>
+                </configuration>
 			</plugin>
 		</plugins>
 	</build>

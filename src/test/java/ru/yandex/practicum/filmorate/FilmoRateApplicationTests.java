@@ -47,10 +47,12 @@ class FilmoRateApplicationTests {
         assertThat(created).isNotNull();
         assertThat(created.getId()).isNotNull();
         assertThat(created.getEmail()).isEqualTo("test-user@mail.ru");
+        assertThat(created.getLogin()).isEqualTo("testUser");
 
         Optional<UserDto> found = userRepository.findById(created.getId());
         assertThat(found).isPresent();
         assertThat(found.get().getLogin()).isEqualTo("testUser");
+        assertThat(found.get().getEmail()).isEqualTo("test-user@mail.ru");
     }
 
     @Test
@@ -65,6 +67,7 @@ class FilmoRateApplicationTests {
 
         List<UserDto> users = userRepository.findAll();
         assertThat(users).isNotEmpty();
+        assertThat(users).anyMatch(u -> "user2".equals(u.getLogin()));
     }
 
     @Test
@@ -81,10 +84,12 @@ class FilmoRateApplicationTests {
         request.setReleaseDate(LocalDate.of(2000, 1, 1));
         request.setDuration(100);
 
-        AgeRatingDto mpa = new AgeRatingDto();
+        // MPA
+        MpaDto mpa = new MpaDto();
         mpa.setId(1L);
         request.setMpa(mpa);
 
+        // Genre
         GenreDto genre = new GenreDto();
         genre.setId(1L);
         request.setGenres(List.of(genre));
@@ -94,18 +99,71 @@ class FilmoRateApplicationTests {
         assertThat(created).isNotNull();
         assertThat(created.getId()).isNotNull();
         assertThat(created.getName()).isEqualTo("Test Film");
+        assertThat(created.getDescription()).isEqualTo("Test Description");
+        assertThat(created.getDuration()).isEqualTo(100);
+
+        // Проверяем, что mpa теперь объект
+        assertThat(created.getMpa()).isNotNull();
+        assertThat(created.getMpa().getId()).isEqualTo(1L);
+        assertThat(created.getMpa().getName()).isNotBlank(); // например "G"
+
+        // Проверяем жанры
+        assertThat(created.getGenres()).isNotEmpty();
+        assertThat(created.getGenres().get(0).getId()).isEqualTo(1L);
+    }
+
+    @Test
+    void testFindFilmById() {
+        // Сначала создаём фильм
+        NewFilmRequest request = new NewFilmRequest();
+        request.setName("Find Me Film");
+        request.setDescription("Description");
+        request.setReleaseDate(LocalDate.of(2010, 5, 15));
+        request.setDuration(90);
+
+        MpaDto mpa = new MpaDto();
+        mpa.setId(3L);
+        request.setMpa(mpa);
+
+        FilmDto created = filmRepository.addNewFilm(request);
+
+        FilmDto found = filmRepository.findById(created.getId());
+
+        assertThat(found).isNotNull();
+        assertThat(found.getId()).isEqualTo(created.getId());
+        assertThat(found.getName()).isEqualTo("Find Me Film");
+        assertThat(found.getMpa()).isNotNull();
+        assertThat(found.getMpa().getId()).isEqualTo(3L);
     }
 
     @Test
     void testFindAllGenres() {
         List<GenreDto> genres = filmRepository.findAllGenre();
         assertThat(genres).isNotNull();
+        assertThat(genres).isNotEmpty(); // обычно в схеме есть предустановленные жанры
+    }
+
+    @Test
+    void testFindGenreById() {
+        GenreDto genre = filmRepository.findGenreById(1L);
+        assertThat(genre).isNotNull();
+        assertThat(genre.getId()).isEqualTo(1L);
+        assertThat(genre.getName()).isNotBlank();
     }
 
     @Test
     void testFindAllMpa() {
-        List<AgeRatingDto> mpa = filmRepository.findAllMpa();
+        List<AgeRatingDto> mpaList = filmRepository.findAllMpa();
+        assertThat(mpaList).isNotNull();
+        assertThat(mpaList).isNotEmpty();
+    }
+
+    @Test
+    void testFindMpaById() {
+        AgeRatingDto mpa = filmRepository.findMpaById(1L);
         assertThat(mpa).isNotNull();
+        assertThat(mpa.getId()).isEqualTo(1L);
+        assertThat(mpa.getName()).isNotBlank();
     }
 
     @Test
