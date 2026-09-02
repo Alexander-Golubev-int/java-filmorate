@@ -4,17 +4,14 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import ru.yandex.practicum.filmorate.exceptions.DuplicatedDataException;
 import ru.yandex.practicum.filmorate.exceptions.FriendshipAlreadyExistsException;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundDataException;
-import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
-import ru.yandex.practicum.filmorate.validator.Create;
-import ru.yandex.practicum.filmorate.validator.Update;
+import ru.yandex.practicum.filmorate.storage.dal.dto.NewUserRequest;
+import ru.yandex.practicum.filmorate.storage.dal.dto.UpdateUserRequestDto;
+import ru.yandex.practicum.filmorate.storage.dal.dto.UserDto;
+import ru.yandex.practicum.filmorate.storage.dal.repository.UserRepository;
+
 
 import java.util.Collection;
 import java.util.Map;
@@ -24,85 +21,99 @@ import java.util.Map;
 public class UserService {
 
     private final Logger log = LoggerFactory.getLogger(UserService.class);
-    private final InMemoryUserStorage inMemoryUserStorage;
+    private final UserRepository userRepository;
 
-    @GetMapping
-    public Collection<User> getUsers() {
-        return inMemoryUserStorage.getUsers();
+    public Collection<UserDto> getUsers() {
+        return userRepository.findAll();
     }
 
-    @PostMapping
-    public User createUser(@Validated(Create.class) @RequestBody User user) {
-        return inMemoryUserStorage.createUser(user);
+    public UserDto createUser(NewUserRequest user) {
+        return userRepository.addNewUser(user);
     }
 
-    @PutMapping
-    public User updateUser(@Validated(Update.class) @RequestBody User user) {
-        return inMemoryUserStorage.updateUser(user);
+    public UserDto updateUser(UpdateUserRequestDto user) {
+        checkUserOrThrow(user.getId());
+        return userRepository.updateUser(user);
     }
 
     public Map<String, String> addFriend(Long id, Long friendId) {
+        if (id.equals(friendId)) {
+            throw new DuplicatedDataException("Пользователь пытается добавить самого себя в друзья");
+        }
         checkUserOrThrow(id, friendId);
-
-        User user = inMemoryUserStorage.getUsersMap().get(id);
-        if (user.getFriends().contains(friendId)) {
-            log.warn("Попытка добавить в друзья пользователя, который уже находится в списке друзей");
+        if (userRepository.areFriends(id, friendId)) {
             throw new FriendshipAlreadyExistsException(id, friendId);
         }
+        userRepository.addConfirmedFriend(id, friendId);
 
-        user.getFriends().add(friendId);
-        user = inMemoryUserStorage.getUsersMap().get(friendId);
-        user.getFriends().add(id);
+        log.info("Пользователь {} добавил в друзья пользователя {}", id, friendId);
         return Map.of("message", "Друг добавлен");
+    }
+
+    public Map<String, String> confirmFriendship(Long id, Long friendId) {
+        checkUserOrThrow(id, friendId);
+
+        boolean areFriends = userRepository.areFriends(id, friendId);
+        boolean haveIncomingRequest = !userRepository.isAnIncomingRequest(id, friendId);
+
+        if (areFriends) {
+            log.info("Пользователь {} уже находятся в дружбе с {}", id, friendId);
+            throw new DuplicatedDataException("Пользователь уже находятся в дружбе");
+        }
+
+        if (haveIncomingRequest) {
+            log.warn("Попытка подтвердить дружбу когда пользователи еще не друзья {} -> {}", id, friendId);
+            throw new NotFoundDataException("Попытка подтвердить дружбу когда пользователи еще не друзья");
+        }
+
+        userRepository.confirmFriendship(friendId, id);
+        userRepository.addNewFriendAfterConfirmFriendship(id, friendId);
+        log.info("Дружба между {} и {} успешно подтверждена.", id, friendId);
+        userRepository.deleteIncomingRequestToFriends(id, friendId);
+        log.info("Пользователь {} удален из списка входящих заявок на добавление", friendId);
+        return Map.of("message", "Дружба подтверждена!😎");
     }
 
     public Map<String, String> deleteFriend(Long id, Long friendId) {
         checkUserOrThrow(id, friendId);
 
-        User user = inMemoryUserStorage.getUsersMap().get(id);
-        user.getFriends().remove(friendId);
-        user = inMemoryUserStorage.getUsersMap().get(friendId);
-        user.getFriends().remove(id);
+        if (!userRepository.areFriends(id, friendId)) {
+            log.info("Пользователь {} не состоит в дружбе с {}, но удаление разрешено", id, friendId);
+            return Map.of("message", "Пользователь успешно удален");
+        }
+
+        userRepository.deleteFriendships(id, friendId);
+        log.info("Пользователь {} удалил пользователя {} из друзей", id, friendId);
         return Map.of("message", "Пользователь успешно удален");
     }
 
-    public Collection<User> getFriendsUser(Long id) {
+    public Collection<UserDto> getFriendsUser(Long id) {
         checkUserOrThrow(id);
-        User user = inMemoryUserStorage.getUsersMap().get(id);
-        return user.getFriends().stream()
-                .map(friendId -> inMemoryUserStorage.getUsersMap().get(friendId))
-                .toList();
+        return userRepository.findAllFriends(id);
     }
 
-    public Collection<User> getMutualFriends(Long id, Long otherId) {
+    public Collection<UserDto> getMutualFriends(Long id, Long otherId) {
         checkUserOrThrow(id);
         checkUserOrThrow(otherId);
-        User user = inMemoryUserStorage.getUsersMap().get(id);
-        User otherUser = inMemoryUserStorage.getUsersMap().get(otherId);
-
-        return user.getFriends().stream()
-                .filter(friend -> otherUser.getFriends().contains(friend))
-                .map(friend -> inMemoryUserStorage.getUsersMap().get(friend))
-                .toList();
+        return userRepository.getCommonFriends(id, otherId);
     }
 
     private void checkUserOrThrow(Long id, Long friendId) {
-        if (!inMemoryUserStorage.getUsersKeySet().contains(id)) {
+        if (userRepository.findById(id).isEmpty()) {
             log.warn("Отправлен не проинициализированный пользователь при попытке добавить в друзья: {}", id);
             throw new NotFoundDataException("Отправлен не проинициализированный пользователь: " + id);
         }
 
-        if (!inMemoryUserStorage.getUsersKeySet().contains(friendId)) {
+        if (userRepository.findById(friendId).isEmpty()) {
             log.warn("Отправлен не проинициализированный пользователь при попытке добавить в друзья: {}", friendId);
             throw new NotFoundDataException("Отправлен не проинициализированный пользователь: " + friendId);
         }
     }
 
-    private void checkUserOrThrow(Long id) {
-        if (!inMemoryUserStorage.getUsersKeySet().contains(id)) {
+    public void checkUserOrThrow(Long id) {
+        if (userRepository.findById(id).isEmpty()) {
             log.warn("Отправлен не проинициализированный пользователь: {}", id);
             throw new NotFoundDataException("Отправлен не проинициализированный пользователь: " + id);
         }
     }
-
 }
