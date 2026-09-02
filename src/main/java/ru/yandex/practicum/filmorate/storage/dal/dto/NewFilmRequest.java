@@ -23,6 +23,6 @@ public class NewFilmRequest {
     @Min(groups = Create.class, value = 1, message = "Продолжительность должна быть положительным числом")
     private Integer duration;
     @NotNull(groups = Create.class, message = "Должен быть указан рейтинг MPA")
-    private AgeRatingDto mpa;
+    private MpaDto mpa;
     private List<GenreDto> genres;
 }

@@ -24,8 +24,8 @@ public class UpdateFilmRequestDto {
     @NotNull(groups = Update.class, message = "Продолжительность должна быть указана")
     @Min(groups = {Update.class}, value = 1, message = "Продолжительность должна быть положительным числом")
     private Integer duration;
-    @NotNull(groups = Update.class, message = "Должен быть указан рейтинг фильма от 1 - 5")
-    private AgeRatingDto mpa;
+    @NotNull
+    private MpaDto mpa;
 
     public boolean hasName() {
         return name != null && !name.isBlank();

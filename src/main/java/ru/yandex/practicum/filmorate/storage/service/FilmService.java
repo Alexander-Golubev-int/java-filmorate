@@ -74,6 +74,7 @@ public class FilmService {
     public FilmDto updateFilm(UpdateFilmRequestDto film) {
         try {
             checkFilmOrThrow(film.getId());
+            filmRepository.findMpaById(film.getMpa().getId());
         } catch (NullPointerException e) {
             throw new ValidationException("Отправлен некорректный JSON");
         }
